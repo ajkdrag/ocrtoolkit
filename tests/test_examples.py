@@ -16,7 +16,7 @@ REPO_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 @unittest.skipIf(VENV_DIR is None, "VIRTUAL_ENV environment variable is not set")
 class ExamplesTestCase(unittest.TestCase):
-    """ Check example scripts function.
+    """Check example scripts function.
 
     This test case assumes it is running in a virtual environment. The same
     virtual environment is activated prior to running the example script
@@ -24,7 +24,7 @@ class ExamplesTestCase(unittest.TestCase):
     """
 
     def run_in_venv(self, filepath, timeout=5.0, **kwargs):
-        """ Run a Python script in a virtual env in a subprocess.
+        """Run a Python script in a virtual env in a subprocess.
 
         filepath references must be relative to the repo root directory.
         """
@@ -60,7 +60,7 @@ class ExamplesTestCase(unittest.TestCase):
         return success
 
     def test_quickstart_example(self):
-        """ check quickstart example """
+        """check quickstart example"""
         self.assertTrue(self.run_in_venv(os.path.join("examples", "quickstart.py")))
 
 

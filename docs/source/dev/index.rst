@@ -22,30 +22,30 @@ Use the Makefile convenience rules to run the tests.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make test
+    (chequeparser) $ make test
 
 To run tests verbosely use:
 
 .. code-block:: console
 
-    (cheqeueparser) $ make test-verbose
+    (chequeparser) $ make test-verbose
 
 Alternatively, you may want to run the test suite directly. The following
 steps assume you are running in a virtual environment in which the
-``cheqeueparser`` package has been installed. If this is
+``chequeparser`` package has been installed. If this is
 not the case then you will likely need to set the ``PYTHONPATH`` environment
-variable so that the ``cheqeueparser`` package can be found.
+variable so that the ``chequeparser`` package can be found.
 
 .. code-block:: console
 
-    (cheqeueparser) $ cd tests
-    (cheqeueparser) $ python -m unittest
+    (chequeparser) $ cd tests
+    (chequeparser) $ python -m unittest
 
 Individual unit tests can be run also.
 
 .. code-block:: console
 
-    (cheqeueparser) $ python -m test_version
+    (chequeparser) $ python -m test_version
 
 
 .. _test-coverage-label:
@@ -58,7 +58,7 @@ Makefile convenience rule to run the code coverage checks.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make coverage
+    (chequeparser) $ make coverage
 
 The test code coverage report can be found `here <../_static/coverage/index.html>`_
 
@@ -74,7 +74,7 @@ to apply code style fixes.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make style
+    (chequeparser) $ make style
 
 .. _format-label:
 
@@ -85,7 +85,7 @@ A Makefile convenience rule exists to perform just code format fixes.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make format
+    (chequeparser) $ make format
 
 .. _import-sort-label:
 
@@ -96,7 +96,7 @@ A Makefile convenience rule exists to perform just module import sorting fixes.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make sort-imports
+    (chequeparser) $ make sort-imports
 
 
 .. _static-analysis-label:
@@ -109,7 +109,7 @@ checks. This will perform linting and type annotations checks.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make check-static-analysis
+    (chequeparser) $ make check-static-analysis
 
 
 .. _code-linting-label:
@@ -121,7 +121,7 @@ A Makefile convenience rule exists to perform code linting checks.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make check-lint
+    (chequeparser) $ make check-lint
 
 
 .. _annotations-label:
@@ -135,7 +135,7 @@ no type annotations issues are reported.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make check-types
+    (chequeparser) $ make check-types
 
 
 .. _documentation-label:
@@ -149,21 +149,21 @@ set of `sphinx <http://sphinx-doc.org/>`_ html content.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make docs
+    (chequeparser) $ make docs
 
 To quickly check consistency of ReStructuredText files use the dummy run which
 does not actually generate HTML content.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make check-docs
+    (chequeparser) $ make check-docs
 
 To quickly view the HTML rendered docs, start a simple web server and open a
 browser to http://127.0.0.1:8000/.
 
 .. code-block:: console
 
-    (cheqeueparser) $ make serve-docs
+    (chequeparser) $ make serve-docs
 
 
 .. _release-label:
@@ -192,14 +192,14 @@ environment.
 
     ::
 
-        https://github.com/{username}/cheqeueparser/releases/{tag}
+        https://github.com/{username}/chequeparser/releases/{tag}
 
 - Create the release distribution. This project produces an artefact called a
   pure Python wheel. The wheel file will be created in the ``dist`` directory.
 
   .. code-block:: console
 
-      (cheqeueparser) $ make dist
+      (chequeparser) $ make dist
 
 - Test the release distribution. This involves creating a virtual environment,
   installing the distribution into it and running project tests against the
@@ -208,12 +208,12 @@ environment.
 
   .. code-block:: console
 
-      (cheqeueparser) $ make dist-test
+      (chequeparser) $ make dist-test
 
 - Upload the release to PyPI using
 
   .. code-block:: console
 
-      (cheqeueparser) $ make dist-upload
+      (chequeparser) $ make dist-upload
 
-  The package should now be available at https://pypi.org/project/cheqeueparser/
+  The package should now be available at https://pypi.org/project/chequeparser/

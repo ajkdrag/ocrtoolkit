@@ -1,15 +1,13 @@
 """
-This example script imports the cheqeueparser package and
+This example script imports the chequeparser package and
 prints out the version.
 """
 
-import cheqeueparser
+import chequeparser
 
 
 def main():
-    print(
-        f"cheqeueparser version: {cheqeueparser.__version__}"
-    )
+    print(f"chequeparser version: {chequeparser.__version__}")
 
 
 if __name__ == "__main__":

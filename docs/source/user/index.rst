@@ -24,9 +24,9 @@ The simplest way to install ChequeParser is using Pip.
 
 .. code-block:: console
 
-    $ pip install cheqeueparser
+    $ pip install chequeparser
 
-This will install ``cheqeueparser`` and all of its dependencies.
+This will install ``chequeparser`` and all of its dependencies.
 
 
 .. _api-reference-label:
@@ -34,7 +34,7 @@ This will install ``cheqeueparser`` and all of its dependencies.
 API Reference
 =============
 
-The `API Reference <http://cheqeueparser.readthedocs.io>`_ provides API-level documentation.
+The `API Reference <http://chequeparser.readthedocs.io>`_ provides API-level documentation.
 
 
 .. include:: ../../../CHANGELOG.rst

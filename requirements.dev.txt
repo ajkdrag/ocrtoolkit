@@ -6,3 +6,7 @@ pylint
 sphinx
 twine
 wheel
+
+# for notebooks
+ipykernel
+jupyter

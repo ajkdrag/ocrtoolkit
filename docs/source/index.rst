@@ -20,7 +20,7 @@ ChequeParser is available on PyPI and can be installed with `pip <https://pip.py
 
 .. code-block:: console
 
-    $ pip install cheqeueparser
+    $ pip install chequeparser
 
 After installing ChequeParser you can use it like any other Python module.
 
@@ -28,5 +28,5 @@ Here is a simple example:
 
 .. code-block:: python
 
-    import cheqeueparser
+    import chequeparser
     # Fill this section in with the common use-case.
