@@ -1,11 +1,12 @@
 from pathlib import Path
-
-from chequeparser.utilities.core import filter_list
+from typing import Union
 from loguru import logger
 from tqdm.autonotebook import tqdm
 
+from chequeparser.utilities.misc import filter_list
 
-def get_img_files(
+
+def get_image_files(
     img_dir: Union[str, Path], ignore_hidden_dirs=True, ignore_hidden_files=True
 ) -> list:
     """Gets all types of image files from the directory.
@@ -25,8 +26,8 @@ def get_img_files(
             continue
         if file.is_file():
             if file.suffix in s_suffixes:
-                img_files.append(file)
-    logger.info("Found {} image files".format(len(l_img_files)))
+                l_img_files.append(str(file))
+    logger.info("Found {} image files.".format(len(l_img_files)))
     return l_img_files
 
 

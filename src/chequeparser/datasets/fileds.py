@@ -29,7 +29,7 @@ class FileDS(BaseDS):
             if Path(self.raw).is_file():
                 return [self.raw]
             elif Path(self.raw).is_dir():
-                return get_img_files(self.raw)
+                return get_image_files(self.raw)
             else:
                 raise ValueError(f"{self.raw} is not a file or a dir")
         return self.raw
@@ -37,7 +37,7 @@ class FileDS(BaseDS):
     def __len__(self):
         return len(self.items)
 
-    def __getitem(self, idx):
+    def __getitem__(self, idx):
         """Returns item at index idx
         Applies tfms ops to that item
         """

@@ -3,3 +3,4 @@ pandas
 opencv-python
 matplotlib
 tqdm
+loguru
