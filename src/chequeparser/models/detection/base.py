@@ -1,13 +1,26 @@
-from abc import ABCMeta, abstractmethod
-
+import cv2
 import numpy as np
+from loguru import logger
+from typing import List
+from abc import ABCMeta, abstractmethod
+from chequeparser.wrappers.results import DetectionResults
 
 
-class BaseDetector(metaclass=ABCMeta):
+class BaseDetect(metaclass=ABCMeta):
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        if image.ndim == 2:
+            return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        return image
+
+    def preprocess_batch(self, 
+                         images: List[np.ndarray]) -> List[np.ndarray]:
+        return [self.preprocess(image) for image in images]
+
     @abstractmethod
-    def predict(self, image: Union[str, np.ndarray, Image.Image]) -> np.ndarray:
+    def predict(self, image: np.ndarray) -> DetectionResults: 
         raise NotImplementedError
 
     @abstractmethod
-    def predict_batch(self, images):
+    def predict_batch(self, 
+                      images: List[np.ndarray]) -> List[DetectionResults]:
         raise NotImplementedError

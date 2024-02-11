@@ -4,7 +4,8 @@ from loguru import logger
 
 
 class BBox:
-    def __init__(self, x1, y1, x2, y2, normalized=True):
+    def __init__(self, x1, y1, x2, y2, 
+                 normalized=True, conf=1.0, label="0"):
         self.x1 = x1 if not normalized else int(x1)
         self.y1 = y1 if not normalized else int(y1)
         self.x2 = x2 if not normalized else int(x2)
@@ -14,15 +15,22 @@ class BBox:
         self.cx = (self.x1 + self.x2) / 2
         self.cy = (self.y1 + self.y2) / 2
         self.normalized = normalized
-        self.values = [x1, y1, x2, y2]
+        self.conf = conf
+        self.label = label
+
+    @property
+    def values(self):
+        """Returns coords in the order [x1, y1, x2, y2]"""
+        return [self.x1, self.y1, self.x2, self.y2]
 
     @staticmethod
-    def from_xywh(x, y, w, h, normalized=True):
-        return BBox(x, y, x + w, y + h, normalized)
+    def from_xywh(x, y, w, h, normalized=True, conf=1.0, label="0"):
+        return BBox(x, y, x + w, y + h, normalized, conf, label)
 
     @staticmethod
-    def from_cxcywh(cx, cy, w, h, normalized=True):
-        return BBox(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, normalized)
+    def from_cxcywh(cx, cy, w, h, normalized=True, conf=1.0, label="0"):
+        return BBox(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, 
+                normalized, conf, label)
 
     def denormalize(self, width, height):
         if not self.normalized:
@@ -34,6 +42,8 @@ class BBox:
             self.x2 * width,
             self.y2 * height,
             normalized=False,
+            conf=self.conf,
+            label=self.label
         )
 
     def normalize(self, width, height):
@@ -46,11 +56,9 @@ class BBox:
             self.x2 / width,
             self.y2 / height,
             normalized=True,
+            conf=self.conf,
+            label=self.label
         )
-
-    def draw(self, bg: np.ndarray, color: tuple, thickness=1):
-        canvas = bg.copy()
-        cv2.rectangle(canvas, (self.x1, self.y1), (self.x2, self.y2), color, thickness)
 
     def __repr__(self):
         rpr = {"x1": self.x1, "y1": self.y1, "x2": self.x2, "y2": self.y2}
