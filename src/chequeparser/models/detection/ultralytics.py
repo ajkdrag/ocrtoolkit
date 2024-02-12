@@ -4,7 +4,7 @@ from loguru import logger
 from chequeparser.models.arch import BaseArch
 from chequeparser.models.detection.base import BaseDetect
 from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.results import DetectionResults
+from chequeparser.wrappers.detection_results import DetectionResults
 
 
 class UltralyticsDetect(BaseDetect):

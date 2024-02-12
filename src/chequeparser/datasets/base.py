@@ -5,6 +5,7 @@ from chequeparser.utilities.img_utils import (
     tfm_to_pil,
     tfm_to_size,
     tfm_to_gray,
+    tfm_to_3ch,
     apply_ops
 )
 
@@ -29,6 +30,7 @@ class BaseDS:
             tfm_to_pil,
             partial(tfm_to_size, size=size) if size else lambda x: x,
             tfm_to_gray if apply_gs else lambda x: x,
+            tfm_to_3ch
         ]
 
         self.setup()

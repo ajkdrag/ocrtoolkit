@@ -3,10 +3,10 @@ import numpy as np
 from loguru import logger
 from typing import List
 from abc import ABCMeta, abstractmethod
-from chequeparser.wrappers.detection_results import DetectionResults
+from chequeparser.wrappers.recognition_results import RecognitionResults
 
 
-class BaseDetect(metaclass=ABCMeta):
+class BaseRecognize(metaclass=ABCMeta):
     def preprocess(self, image: np.ndarray) -> np.ndarray:
         if image.ndim == 2:
             return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
@@ -17,10 +17,10 @@ class BaseDetect(metaclass=ABCMeta):
         return [self.preprocess(image) for image in images]
 
     @abstractmethod
-    def predict(self, image: np.ndarray) -> DetectionResults: 
+    def predict(self, image: np.ndarray) -> RecognitionResults: 
         raise NotImplementedError
 
     @abstractmethod
     def predict_batch(self, 
-                      images: List[np.ndarray]) -> List[DetectionResults]:
+                      images: List[np.ndarray]) -> List[RecognitionResults]:
         raise NotImplementedError

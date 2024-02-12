@@ -71,11 +71,12 @@ class DetectionResults:
             if show_conf:
                 str_label += f" {bbox.conf:.2f}"
             
-            draw_bbox(canvas, denorm_bbox.values, str_label,
+            canvas = draw_bbox(canvas, denorm_bbox.values, str_label,
                       color=color, text_color=text_color)
 
         overlay = cv2.addWeighted(canvas, 
                       alpha, self.np_img, 1-alpha, gamma=0)
         plt.figure(figsize=(10, 10))
+        plt.axis("off")
         plt.imshow(overlay)
 

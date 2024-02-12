@@ -5,6 +5,25 @@ from chequeparser.models.detection.base import BaseDetect
 from chequeparser.datasets.base import BaseDS
 
 
+def _detect(model: BaseDetect,
+           ds: BaseDS, **kwargs):
+    if not ds.batched:
+        for idx, img in enumerate(ds):
+            np_img = model.preprocess(np.array(img))
+            det_results = model.predict(np_img, **kwargs)
+            det_results.parent_ds = ds
+            det_results.parent_idx = idx
+            yield det_results
+    else:
+        l_np_imgs = [np.array(img) for img in ds]
+        l_inputs = model.preprocess_batch(l_np_imgs)
+        l_det_results = model.predict_batch(l_inputs, **kwargs)
+        for idx, det_results in enumerate(l_det_results):
+            det_results.parent_ds = ds
+            det_results.parent_idx = idx
+            yield det_results
+
+
 def detect(model: BaseDetect,
            ds: BaseDS, stream=True, **kwargs):
     """Detects objects in a dataset
@@ -22,20 +41,4 @@ def detect(model: BaseDetect,
     return list(_detect(model, ds, **kwargs))
 
     
-def _detect(model: BaseDetect,
-           ds: BaseDS, **kwargs):
-    if not ds.batched:
-        for idx, img in enumerate(ds):
-            np_img = model.preprocess(np.array(img))
-            det_results = model.predict(np_img, **kwargs)
-            det_results.parent_ds = ds
-            det_results.parent_idx = idx
-            yield det_results
-    else:
-        l_np_imgs = [np.array(img) for img in ds]
-        l_inputs = model.preprocess_batch(l_np_imgs)
-        l_det_results = model.predict_batch(l_inputs, **kwargs)
-        for idx, det_results in enumerate(l_det_results):
-            det_results.parent_ds = ds
-            det_results.parent_idx = idx
-            yield res
+

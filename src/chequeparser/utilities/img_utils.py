@@ -18,6 +18,11 @@ def tfm_to_size(img: Image, size: tuple):
     return img.resize(size)
 
 
+def tfm_to_3ch(img: Image):
+    """Converts image to 3 channel"""
+    return img.convert("RGB")
+
+
 def apply_ops(img: Image, ops):
     """Applies list of operations to image"""
     for op in ops:
