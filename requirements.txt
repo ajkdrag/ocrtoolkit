@@ -4,3 +4,5 @@ opencv-python
 matplotlib
 tqdm
 loguru
+ultralytics
+python-doctr[torch]

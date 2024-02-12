@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 from loguru import logger
 from PIL import Image
+from typing import List
 
 
 def is_var_file(var):
@@ -45,7 +46,8 @@ def get_samples(l_source: list, k=5) -> list:
     if k < 0:
         logger.error("k cannot be negative")
         raise ValueError("k cannot be negative")
-    return random.sample(l_source, k)
+    indices = random.sample(range(len(l_source)), k)
+    return [l_source[i] for i in indices], indices
 
 
 def filter_list(l_source, func_tgt, func_cond, num_samples=5) -> list:
@@ -61,4 +63,4 @@ def filter_list(l_source, func_tgt, func_cond, num_samples=5) -> list:
             l_final.append(out)
         else:
             l_samples.append(item)
-    return l_final, get_samples(l_samples, num_samples)
+    return l_final, get_samples(l_samples, num_samples)[0]

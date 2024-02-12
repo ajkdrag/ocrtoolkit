@@ -15,31 +15,24 @@ class FileDS(BaseDS):
     """
 
     raw: Union[str, Path, List[str], List[Path]] = None
-
     items: Union[List[str], List[Path]] = None
 
-    def load(self):
+    def setup(self):
         """If raw is a single file, converts to list
         Checks if str or Path is a file or a directory
         If it's a single file, then converts to list
         If it's a directory, then returns list of image files
         """
-        self.tfms = [Image.open, *self.tfms]
-        if isinstance(self.raw, (str, Path)):
-            if Path(self.raw).is_file():
-                return [self.raw]
-            elif Path(self.raw).is_dir():
-                return get_image_files(self.raw)
-            else:
-                raise ValueError(f"{self.raw} is not a file or a dir")
-        return self.raw
+        if self.items is None:
+            self.tfms = [Image.open, *self.tfms]
+            if isinstance(self.raw, (str, Path)):
+                if Path(self.raw).is_file():
+                    self.items = [self.raw]
+                elif Path(self.raw).is_dir():
+                    self.items = get_image_files(self.raw)
+                else:
+                    raise ValueError(f"{self.raw} is not a file or a dir")
+            else: self.items = self.raw
 
-    def __len__(self):
-        return len(self.items)
-
-    def __getitem__(self, idx):
-        """Returns item at index idx
-        Applies tfms ops to that item
-        """
-        item = self.items[idx]
-        return apply_ops(item, self.tfms)
+        if self.l_parent_idx is None:
+            self.l_parent_idx = list(range(len(self.items)))

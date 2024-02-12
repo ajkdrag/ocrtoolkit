@@ -13,22 +13,16 @@ class ImageDS(BaseDS):
     Can be iterated through like a list
     """
 
-    raw: Union[Image.Image, np.ndarray, List[Image.Image], List[np.ndarray]] = None
-
+    raw: Union[Image.Image, np.ndarray, 
+               List[Image.Image], List[np.ndarray]] = None
     items: Union[List[Image.Image], List[np.ndarray]] = None
 
-    def load(self):
+    def setup(self):
         """If raw is a single image, converts to list"""
-        if isinstance(self.raw, (Image.Image, np.ndarray)):
-            return [self.raw]
-        return self.raw
+        if self.items is None:
+            if isinstance(self.raw, (Image.Image, np.ndarray)):
+                self.items = [self.raw]
+            else: self.items = self.raw
 
-    def __len__(self):
-        return len(self.items)
-
-    def __getitem__(self, idx):
-        """Returns item at index idx
-        Applies tfms ops to that item
-        """
-        item = self.items[idx]
-        return apply_ops(item, self.tfms)
+        if self.l_parent_idx is None:
+            self.l_parent_idx = list(range(len(self.items)))
