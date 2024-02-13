@@ -29,12 +29,17 @@ class DetectionResults:
     def __len__(self):
         return len(self.bboxes)
 
-    def filter_by_label(self, label):
+    def filter_by_label(self, label, only_max_conf=False):
         """Returns a new DetectionResults
         with only the bboxes with the given label
+        If only_max_conf is True, only the bbox with the highest confidence
+        is returned
         """
+        valid_boxes = [bbox for bbox in self.bboxes if bbox.label == label]
+        if only_max_conf:
+            valid_boxes = [max(valid_boxes, key=lambda x: x.conf)]
         return DetectionResults(
-            [bbox for bbox in self.bboxes if bbox.label == label],
+            valid_boxes,
             self.np_img,
             self.parent_ds,
             self.parent_idx,
