@@ -1,12 +1,12 @@
 import numpy as np
 from loguru import logger
 from PIL import Image
-from chequeparser.models.recognition.base import BaseRecognize
+
 from chequeparser.datasets.base import BaseDS
+from chequeparser.models.recognition.base import BaseRecognize
 
 
-def _recognize(model: BaseRecognize,
-               ds: BaseDS, **kwargs):
+def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
     if not ds.batched:
         for idx, img in enumerate(ds):
             np_img = model.preprocess(np.array(img))
@@ -24,12 +24,11 @@ def _recognize(model: BaseRecognize,
             yield res
 
 
-def recognize(model: BaseRecognize,
-              ds: BaseDS, stream=True, **kwargs):
+def recognize(model: BaseRecognize, ds: BaseDS, stream=True, **kwargs):
     logger.info("Stream mode: {}", stream)
     logger.info("Batched mode: {}", ds.batched)
     logger.info("Running predict on {} samples", len(ds))
     gen = _recognize(model, ds, **kwargs)
-    if stream: return gen
+    if stream:
+        return gen
     return list(_recognize(model, ds, **kwargs))
-

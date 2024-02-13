@@ -1,10 +1,10 @@
 import random
 from pathlib import Path
+from typing import List
 
 import numpy as np
 from loguru import logger
 from PIL import Image
-from typing import List
 
 
 def is_var_file(var):
@@ -64,3 +64,16 @@ def filter_list(l_source, func_tgt, func_cond, num_samples=5) -> list:
         else:
             l_samples.append(item)
     return l_final, get_samples(l_samples, num_samples)[0]
+
+
+def partition_list(l_source, l_sizes):
+    """If l_source=[1, 2, 3, 5], l_sizes=[1, 3], return [[1], [2, 3, 5]]
+    Assert len(l_source) == sum(l_sizes)
+    """
+    assert sum(l_sizes) == len(l_source), "Partition sizes do not add up to list length"
+    l_partitions = []
+    idx = 0
+    for size in l_sizes:
+        l_partitions.append(l_source[idx : idx + size])
+        idx += size
+    return l_partitions

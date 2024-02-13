@@ -1,6 +1,8 @@
-import numpy as np
 from typing import Any, List
+
+import numpy as np
 from loguru import logger
+
 from chequeparser.models.arch import BaseArch
 from chequeparser.models.detection.base import BaseDetect
 from chequeparser.wrappers.bbox import BBox
@@ -24,12 +26,10 @@ class UltralyticsDetect(BaseDetect):
         self.loader = arch(**self.arch_config)
         self.network = self.loader(path)
 
-    def predict(self, 
-                image: np.ndarray) -> DetectionResults:
+    def predict(self, image: np.ndarray) -> DetectionResults:
         return self.predict_batch([image])[0]
-        
-    def predict_batch(self, 
-                      images: List[np.ndarray]) -> List[DetectionResults]:
+
+    def predict_batch(self, images: List[np.ndarray]) -> List[DetectionResults]:
         l_preds = self.network.predict(images, **self.predict_config)
         l_results = []
         for image, preds in zip(images, l_preds):
@@ -44,4 +44,3 @@ class UltralyticsDetect(BaseDetect):
             ]
             l_results.append(DetectionResults(l_bboxes, image))
         return l_results
-

@@ -1,26 +1,40 @@
 import math
 from functools import partial
-from chequeparser.utilities.misc import get_samples
+
 from chequeparser.utilities.img_utils import (
+    apply_ops,
+    tfm_to_3ch,
+    tfm_to_gray,
     tfm_to_pil,
     tfm_to_size,
-    tfm_to_gray,
-    tfm_to_3ch,
-    apply_ops
 )
+from chequeparser.utilities.misc import get_samples
 
 
 class BaseDS:
-    raw = None
-    items = None
+    source = None
+    items = []
+    names = []
     parent_ds = None
     l_parent_idx = None
+    size = None
+    apply_gs = True
+    batched = False
 
-    def __init__(self, raw, items=None, size=(640, 320), 
-                 apply_gs=True, batched=False, 
-                 parent_ds=None, l_parent_idx=None):
-        self.raw = raw
+    def __init__(
+        self,
+        source,
+        items=None,
+        names=None,
+        size=(640, 320),
+        apply_gs=True,
+        batched=False,
+        parent_ds=None,
+        l_parent_idx=None,
+    ):
+        self.source = source
         self.items = items
+        self.names = names
         self.size = size
         self.apply_gs = apply_gs
         self.batched = batched
@@ -30,7 +44,7 @@ class BaseDS:
             tfm_to_pil,
             partial(tfm_to_size, size=size) if size else lambda x: x,
             tfm_to_gray if apply_gs else lambda x: x,
-            tfm_to_3ch
+            tfm_to_3ch,
         ]
 
         self.setup()
@@ -39,12 +53,16 @@ class BaseDS:
         """returns a sample DS of size k"""
         samples, indices = get_samples(self.items, k)
         nl_parent_idx = [self.l_parent_idx[i] for i in indices]
-        return self.__class__(samples, 
-                              size=self.size, 
-                              apply_gs=self.apply_gs,
-                              batched=batched,
-                              parent_ds=self,
-                              l_parent_idx=nl_parent_idx)
+        nl_names = [self.names[i] for i in indices]
+        return self.__class__(
+            source=samples,
+            names=nl_names,
+            size=self.size,
+            apply_gs=self.apply_gs,
+            batched=batched,
+            parent_ds=self,
+            l_parent_idx=nl_parent_idx,
+        )
 
     def num_batches(self, bs=4):
         return math.ceil(len(self) / bs)
@@ -57,16 +75,18 @@ class BaseDS:
         Handle the case where last batch is smaller
         """
         bs = min(bs, len(self))
-        if bs_idx < 0: bs_idx += self.num_batches(bs)
+        if bs_idx < 0:
+            bs_idx += self.num_batches(bs)
         start = max(0, bs_idx * bs)
         end = min(len(self), start + bs)
         return self.__class__(
-            self.items[start:end],
+            source=self.items[start:end],
+            names=self.names[start:end],
             size=self.size,
             apply_gs=self.apply_gs,
             batched=True,
             parent_ds=self,
-            l_parent_idx=self.l_parent_idx[start:end]
+            l_parent_idx=self.l_parent_idx[start:end],
         )
 
     def setup(self):
@@ -74,17 +94,19 @@ class BaseDS:
             self.l_parent_idx = []
         if self.items is None:
             self.items = []
+        if self.names is None:
+            self.reset_names()
 
     @staticmethod
-    def empty_like(other: 'BaseDS'):
+    def empty_like(other: "BaseDS"):
         """Returns an empty ds of type other"""
         return other.__class__(
-            items=[],
-            l_parent_idx=[],
+            source=[],
+            l_parent_idx=other.l_parent_idx,
             parent_ds=other.parent_ds,
-            batched=False,
-            apply_gs=False,
-            size=None
+            batched=other.batched,
+            apply_gs=other.apply_gs,
+            size=other.size,
         )
 
     def __len__(self):
@@ -96,3 +118,6 @@ class BaseDS:
         """
         item = self.items[idx]
         return apply_ops(item, self.tfms)
+
+    def reset_names(self):
+        self.names = []

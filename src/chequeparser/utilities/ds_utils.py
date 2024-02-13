@@ -1,8 +1,9 @@
 from typing import List
+
 from chequeparser.datasets.base import BaseDS
 
 
-def concat_ds(l_ds: List[BaseDS]) -> BaseDS:
+def concat_ds(l_ds: List[BaseDS], reset_names=False) -> BaseDS:
     """Concatenates a list of datasets
     Assumes that all datasets are of same type
     Assumes that all datasets stem from same parent_ds
@@ -11,11 +12,17 @@ def concat_ds(l_ds: List[BaseDS]) -> BaseDS:
         return None
     if len(l_ds) == 1:
         return l_ds[0]
-    return l_ds[0].__class__(
-        raw=[item for ds in l_ds for item in ds.items],
-        l_parent_idx=[item for ds in l_ds for item in ds.l_parent_idx],
+
+    concatenated_ds = l_ds[0].__class__(
+        source=[item for ds in l_ds for item in ds.items],
+        names=[name for ds in l_ds for name in ds.names],
+        l_parent_idx=[parent_idx for ds in l_ds for parent_idx in ds.l_parent_idx],
         parent_ds=l_ds[0].parent_ds,
         batched=False,
         apply_gs=l_ds[0].apply_gs,
         size=l_ds[0].size,
     )
+
+    if reset_names:
+        concatenated_ds.reset_names()
+    return concatenated_ds

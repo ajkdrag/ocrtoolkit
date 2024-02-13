@@ -1,12 +1,12 @@
 import numpy as np
 from loguru import logger
 from PIL import Image
-from chequeparser.models.detection.base import BaseDetect
+
 from chequeparser.datasets.base import BaseDS
+from chequeparser.models.detection.base import BaseDetect
 
 
-def _detect(model: BaseDetect,
-           ds: BaseDS, **kwargs):
+def _detect(model: BaseDetect, ds: BaseDS, **kwargs):
     if not ds.batched:
         for idx, img in enumerate(ds):
             np_img = model.preprocess(np.array(img))
@@ -24,8 +24,7 @@ def _detect(model: BaseDetect,
             yield det_results
 
 
-def detect(model: BaseDetect,
-           ds: BaseDS, stream=True, **kwargs):
+def detect(model: BaseDetect, ds: BaseDS, stream=True, **kwargs):
     """Detects objects in a dataset
     If ds is not batched, call model.predict(...)
     If ds is batched, call model.predict_batch(...)
@@ -37,8 +36,6 @@ def detect(model: BaseDetect,
     logger.info("Batched mode: {}", ds.batched)
     logger.info("Running predict on {} samples", len(ds))
     gen = _detect(model, ds, **kwargs)
-    if stream: return gen
+    if stream:
+        return gen
     return list(_detect(model, ds, **kwargs))
-
-    
-

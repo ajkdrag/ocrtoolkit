@@ -1,6 +1,7 @@
 from functools import partial
-from ultralytics import YOLO, RTDETR
+
 from doctr.models import recognition_predictor
+from ultralytics import RTDETR, YOLO
 
 
 class BaseArch(type):
@@ -20,10 +21,7 @@ class UL_RTDETR(metaclass=BaseArch):
         return partial(RTDETR, **kwargs)
 
 
-class DOCTR_CRNN_VGG16_PRETRAINED(metaclass=BaseArch):
+class DOCTR_PRETRAINED(metaclass=BaseArch):
     @staticmethod
     def load(**kwargs):
-        return partial(recognition_predictor,
-                       arch="crnn_vgg16_bn",
-                       pretrained=True,
-                        **kwargs)
+        return partial(recognition_predictor, pretrained=True, **kwargs)

@@ -4,8 +4,7 @@ from loguru import logger
 
 
 class BBox:
-    def __init__(self, x1, y1, x2, y2, 
-                 normalized=True, conf=1.0, label="0"):
+    def __init__(self, x1, y1, x2, y2, normalized=True, conf=1.0, label="0"):
         self.x1 = x1 if not normalized else int(x1)
         self.y1 = y1 if not normalized else int(y1)
         self.x2 = x2 if not normalized else int(x2)
@@ -29,8 +28,9 @@ class BBox:
 
     @staticmethod
     def from_cxcywh(cx, cy, w, h, normalized=True, conf=1.0, label="0"):
-        return BBox(cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, 
-                normalized, conf, label)
+        return BBox(
+            cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, normalized, conf, label
+        )
 
     def denormalize(self, width, height):
         if not self.normalized:
@@ -43,7 +43,7 @@ class BBox:
             self.y2 * height,
             normalized=False,
             conf=self.conf,
-            label=self.label
+            label=self.label,
         )
 
     def normalize(self, width, height):
@@ -57,7 +57,7 @@ class BBox:
             self.y2 / height,
             normalized=True,
             conf=self.conf,
-            label=self.label
+            label=self.label,
         )
 
     def __repr__(self):
