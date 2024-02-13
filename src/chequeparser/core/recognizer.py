@@ -13,6 +13,7 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
             recog_results = model.predict(np_img, **kwargs)
             recog_results.parent_ds = ds
             recog_results.parent_idx = idx
+            recog_results.label = ds.names[idx]
             yield recog_results
     else:
         l_np_imgs = [np.array(img) for img in ds]
@@ -21,6 +22,7 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
         for idx, det_results in enumerate(l_recog_results):
             recog_results.parent_ds = ds
             recog_results.parent_idx = idx
+            recog_results.label = ds.names[idx]
             yield res
 
 

@@ -1,6 +1,9 @@
 from functools import partial
 
-from doctr.models import recognition_predictor
+from doctr.models import (
+    detection_predictor,
+    recognition_predictor
+)
 from ultralytics import RTDETR, YOLO
 
 
@@ -21,7 +24,13 @@ class UL_RTDETR(metaclass=BaseArch):
         return partial(RTDETR, **kwargs)
 
 
-class DOCTR_PRETRAINED(metaclass=BaseArch):
+class DOCTR_RECOG_PRETRAINED(metaclass=BaseArch):
     @staticmethod
     def load(**kwargs):
         return partial(recognition_predictor, pretrained=True, **kwargs)
+
+
+class DOCTR_DETECT_PRETRAINED(metaclass=BaseArch):
+    @staticmethod
+    def load(**kwargs):
+        return partial(detection_predictor, pretrained=True, **kwargs)

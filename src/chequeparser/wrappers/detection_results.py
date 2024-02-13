@@ -29,15 +29,24 @@ class DetectionResults:
     def __len__(self):
         return len(self.bboxes)
 
-    def filter_by_label(self, label, only_max_conf=False):
+    def filter_by_labels(self, labels:list, only_max_conf=False):
         """Returns a new DetectionResults
-        with only the bboxes with the given label
+        with only the bboxes belonging to the list of labels provided
         If only_max_conf is True, only the bbox with the highest confidence
-        is returned
+        is returned for each label
         """
-        valid_boxes = [bbox for bbox in self.bboxes if bbox.label == label]
+        valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
         if only_max_conf:
-            valid_boxes = [max(valid_boxes, key=lambda x: x.conf)]
+            dict_max_conf = {}
+            for label in labels:
+                dict_max_conf[label] = max(
+                    [bbox.conf for bbox in valid_boxes if bbox.label == label]
+                )
+            valid_boxes = [
+                bbox for bbox in valid_boxes 
+                if bbox.conf == dict_max_conf[bbox.label]
+            ]
+
         return DetectionResults(
             valid_boxes,
             self.np_img,
@@ -51,6 +60,19 @@ class DetectionResults:
         """
         return DetectionResults(
             [bbox for bbox in self.bboxes if bbox.conf >= conf],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def filter_by_bbox(self, bbox: BBox, thresh=0.8):
+        """Returns a new DetectionResults
+        with only the bboxes that intersect with 
+        the other bboxes with a threshhold >= thresh
+        """
+        return DetectionResults(
+            [bbox_ for bbox_ in self.bboxes 
+             if bbox_.is_inside(bbox, thresh)],
             self.np_img,
             self.parent_ds,
             self.parent_idx,
@@ -102,7 +124,7 @@ class DetectionResults:
         for bbox in self.bboxes:
             denorm_bbox = bbox
 
-            if not bbox.normalized:
+            if bbox.normalized:
                 denorm_bbox = bbox.denormalize(self.width, self.height)
 
             str_label = ""

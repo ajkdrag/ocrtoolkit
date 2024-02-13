@@ -1,14 +1,13 @@
 import cv2
 import numpy as np
-from loguru import logger
 
 
 class BBox:
     def __init__(self, x1, y1, x2, y2, normalized=True, conf=1.0, label="0"):
-        self.x1 = x1 if not normalized else int(x1)
-        self.y1 = y1 if not normalized else int(y1)
-        self.x2 = x2 if not normalized else int(x2)
-        self.y2 = y2 if not normalized else int(y2)
+        self.x1 = x1 if normalized else int(x1)
+        self.y1 = y1 if normalized else int(y1)
+        self.x2 = x2 if normalized else int(x2)
+        self.y2 = y2 if normalized else int(y2)
         self.w = self.x2 - self.x1
         self.h = self.y2 - self.y1
         self.cx = (self.x1 + self.x2) / 2
@@ -16,6 +15,7 @@ class BBox:
         self.normalized = normalized
         self.conf = conf
         self.label = label
+        self.area = self.w * self.h
 
     @property
     def values(self):
@@ -34,7 +34,6 @@ class BBox:
 
     def denormalize(self, width, height):
         if not self.normalized:
-            logger.info("BBox is already denormalized. Skipping.")
             return self
         return BBox(
             self.x1 * width,
@@ -48,7 +47,6 @@ class BBox:
 
     def normalize(self, width, height):
         if self.normalized:
-            logger.info("BBox is already normalized. Skipping.")
             return self
         return BBox(
             self.x1 / width,
@@ -59,6 +57,20 @@ class BBox:
             conf=self.conf,
             label=self.label,
         )
+
+    def is_inside(self, other: "BBox", thresh=0.8):
+        """Returns True if the BBox is inside the other BBox
+        Calculates the intersection area as IA and self area as A
+        If IA / A >= thresh, returns True
+        Computation is done in denormalized coordinates
+        """
+        bboxA = self.denormalize(self.width, self.height)
+        bboxB = other.denormalize(other.width, other.height)
+        IA = (min(bboxA.x2, bboxB.x2) - max(bboxA.x1, bboxB.x1)) * (
+            min(bboxA.y2, bboxB.y2) - max(bboxA.y1, bboxB.y1)
+        )
+        A = self.w * self.h
+        return IA / A >= thresh
 
     def __repr__(self):
         rpr = {"x1": self.x1, "y1": self.y1, "x2": self.x2, "y2": self.y2}
