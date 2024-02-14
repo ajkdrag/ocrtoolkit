@@ -29,11 +29,12 @@ class DetectionResults:
     def __len__(self):
         return len(self.bboxes)
 
-    def filter_by_labels(self, labels:list, only_max_conf=False):
+    def filter_by_labels(self, labels: list, only_max_conf=False, split=True):
         """Returns a new DetectionResults
         with only the bboxes belonging to the list of labels provided
         If only_max_conf is True, only the bbox with the highest confidence
         is returned for each label
+        If split is True, returns a list of DetectionResults for each label
         """
         valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
         if only_max_conf:
@@ -43,8 +44,17 @@ class DetectionResults:
                     [bbox.conf for bbox in valid_boxes if bbox.label == label]
                 )
             valid_boxes = [
-                bbox for bbox in valid_boxes 
-                if bbox.conf == dict_max_conf[bbox.label]
+                bbox for bbox in valid_boxes if bbox.conf == dict_max_conf[bbox.label]
+            ]
+        if split:
+            return [
+                DetectionResults(
+                    [bbox for bbox in valid_boxes if bbox.label == label],
+                    self.np_img,
+                    self.parent_ds,
+                    self.parent_idx,
+                )
+                for label in labels
             ]
 
         return DetectionResults(
@@ -67,12 +77,25 @@ class DetectionResults:
 
     def filter_by_bbox(self, bbox: BBox, thresh=0.8):
         """Returns a new DetectionResults
-        with only the bboxes that intersect with 
+        with only the bboxes that intersect with
         the other bboxes with a threshhold >= thresh
+        Assumes bbox is denormalized
         """
         return DetectionResults(
-            [bbox_ for bbox_ in self.bboxes 
-             if bbox_.is_inside(bbox, thresh)],
+            [
+                b
+                for b in self.bboxes
+                if b.denormalize(self.width, self.height).is_inside(bbox, thresh)
+            ],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def empty(self):
+        """Returns an empty DetectionResults like self"""
+        return DetectionResults(
+            [],
             self.np_img,
             self.parent_ds,
             self.parent_idx,
@@ -100,12 +123,19 @@ class DetectionResults:
         Returns a list of numpy arrays
         """
         return [
-            self.np_img[bbox.y1 : bbox.y2, bbox.x1 : bbox.x2] for bbox in self.bboxes
+            self.np_img[bbox.y1 : bbox.y2, bbox.x1 : bbox.x2]
+            for bbox in map(
+                lambda x: x.denormalize(self.width, self.height), self.bboxes
+            )
         ]
+
+    def sort_bboxes_lr_(self):
+        """Sorts the bboxes left to right by x coordinate"""
+        self.bboxes.sort(key=lambda x: x.x1)
 
     def draw(
         self,
-        color: tuple = (255, 255, 255),
+        color: tuple = (255, 0, 0),
         alpha=0.7,
         show_conf=True,
         show_label=True,

@@ -1,9 +1,8 @@
 from typing import Any, List
 
 import numpy as np
-from loguru import logger
-
 from doctr.models.predictor.base import _OCRPredictor
+from loguru import logger
 
 from chequeparser.models.arch import BaseArch
 from chequeparser.models.detection.base import BaseDetect
@@ -34,15 +33,13 @@ class DoctrDetect(BaseDetect):
 
     def predict_batch(self, images: List[np.ndarray]) -> List[DetectionResults]:
         l_preds = self.network(images, **self.predict_config)
-        l_loc_preds = [list(loc_pred.values())[0] 
-                       for loc_pred in l_preds]
-        l_loc_preds = (self.doctr_base_predictor
-                           ._remove_padding(images, l_loc_preds))
+        l_loc_preds = [list(loc_pred.values())[0] for loc_pred in l_preds]
+        l_loc_preds = self.doctr_base_predictor._remove_padding(images, l_loc_preds)
 
         l_results = []
         for image, preds in zip(images, l_loc_preds):
             l_confs = preds[:, 4].tolist()
-            l_labels = [0]*len(l_confs)
+            l_labels = ["0"] * len(l_confs)
             l_coords = preds[:, :4].tolist()
             l_bboxes = [
                 BBox(*bbox, conf=conf, label=label, normalized=True)

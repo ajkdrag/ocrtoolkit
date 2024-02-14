@@ -7,8 +7,15 @@ from chequeparser.utilities.draw_utils import draw_ocr_text
 
 
 class RecognitionResults:
-    def __init__(self, text, conf, np_img: np.ndarray,
-                  label=None, parent_ds=None, parent_idx=None):
+    def __init__(
+        self,
+        text,
+        conf,
+        np_img: np.ndarray,
+        label=None,
+        parent_ds=None,
+        parent_idx=None,
+    ):
         self.text = text
         self.conf = conf
         self.label = label

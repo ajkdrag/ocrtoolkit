@@ -8,6 +8,7 @@ class BBox:
         self.y1 = y1 if normalized else int(y1)
         self.x2 = x2 if normalized else int(x2)
         self.y2 = y2 if normalized else int(y2)
+        self.eps = 0.0001
         self.w = self.x2 - self.x1
         self.h = self.y2 - self.y1
         self.cx = (self.x1 + self.x2) / 2
@@ -16,6 +17,7 @@ class BBox:
         self.conf = conf
         self.label = label
         self.area = self.w * self.h
+        self.eps_area = self.area if self.area > self.eps else self.eps
 
     @property
     def values(self):
@@ -58,18 +60,27 @@ class BBox:
             label=self.label,
         )
 
+    def intersection_area(self, other: "BBox"):
+        """Returns the area of intersection between two bboxes
+        Assumes same normalization states for both boxes
+        """
+        assert self.normalized == other.normalized, "Normalization is different"
+        x1 = max(self.x1, other.x1)
+        y1 = max(self.y1, other.y1)
+        x2 = min(self.x2, other.x2)
+        y2 = min(self.y2, other.y2)
+        inter_area = max(0, x2 - x1 + self.eps) * max(0, y2 - y1 + self.eps)
+        return inter_area
+
     def is_inside(self, other: "BBox", thresh=0.8):
         """Returns True if the BBox is inside the other BBox
         Calculates the intersection area as IA and self area as A
         If IA / A >= thresh, returns True
-        Computation is done in denormalized coordinates
+        Normalization states for bothe boxes should be same
         """
-        bboxA = self.denormalize(self.width, self.height)
-        bboxB = other.denormalize(other.width, other.height)
-        IA = (min(bboxA.x2, bboxB.x2) - max(bboxA.x1, bboxB.x1)) * (
-            min(bboxA.y2, bboxB.y2) - max(bboxA.y1, bboxB.y1)
-        )
-        A = self.w * self.h
+        assert self.normalized == other.normalized, "Normalization is different"
+        IA = self.intersection_area(other)
+        A = self.eps_area
         return IA / A >= thresh
 
     def __repr__(self):

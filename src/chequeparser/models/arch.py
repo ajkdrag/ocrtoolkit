@@ -1,9 +1,6 @@
 from functools import partial
 
-from doctr.models import (
-    detection_predictor,
-    recognition_predictor
-)
+from doctr.models import detection_predictor, recognition_predictor
 from ultralytics import RTDETR, YOLO
 
 
