@@ -19,11 +19,11 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
         l_np_imgs = [np.array(img) for img in ds]
         l_inputs = model.preprocess_batch(l_np_imgs)
         l_recog_results = model.predict_batch(l_inputs, **kwargs)
-        for idx, det_results in enumerate(l_recog_results):
+        for idx, recog_results in enumerate(l_recog_results):
             recog_results.parent_ds = ds
             recog_results.parent_idx = idx
             recog_results.label = ds.names[idx]
-            yield res
+            yield recog_results
 
 
 def recognize(model: BaseRecognize, ds: BaseDS, stream=True, **kwargs):

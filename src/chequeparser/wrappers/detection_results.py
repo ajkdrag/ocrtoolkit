@@ -37,11 +37,13 @@ class DetectionResults:
         If split is True, returns a list of DetectionResults for each label
         """
         valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
+        NEG_INF = -9999999
         if only_max_conf:
             dict_max_conf = {}
             for label in labels:
                 dict_max_conf[label] = max(
-                    [bbox.conf for bbox in valid_boxes if bbox.label == label]
+                    [NEG_INF]
+                    + [bbox.conf for bbox in valid_boxes if bbox.label == label]
                 )
             valid_boxes = [
                 bbox for bbox in valid_boxes if bbox.conf == dict_max_conf[bbox.label]

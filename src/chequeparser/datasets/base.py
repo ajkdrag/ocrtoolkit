@@ -119,5 +119,37 @@ class BaseDS:
         item = self.items[idx]
         return apply_ops(item, self.tfms)
 
-    def reset_names(self):
-        self.names = []
+    def get_as_ds(self, key: Union[int, str]) -> "BaseDS":
+        """Returns new ds with item at index idx if key is integer,
+        else returns new ds with item(s) having the name key
+        """
+        if isinstance(key, int):
+            return self.__class__(
+                source=[self.items[key]],
+                names=[self.names[key]],
+                l_parent_idx=[self.l_parent_idx[key]],
+                parent_ds=self.parent_ds,
+                batched=self.batched,
+                apply_gs=self.apply_gs,
+                size=self.size,
+            )
+        else:
+            return self.__class__(
+                source=[
+                    self.items[i] for i in range(len(self)) if self.names[i] == key
+                ],
+                names=[self.names[i] for i in range(len(self)) if self.names[i] == key],
+                l_parent_idx=[
+                    self.l_parent_idx[i]
+                    for i in range(len(self))
+                    if self.names[i] == key
+                ],
+                parent_ds=self.parent_ds,
+                batched=self.batched,
+                apply_gs=self.apply_gs,
+                size=self.size,
+            )
+
+
+def reset_names(self):
+    self.names = []
