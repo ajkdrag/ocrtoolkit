@@ -7,11 +7,13 @@ import numpy as np
 from chequeparser.datasets.imageds import ImageDS
 from chequeparser.utilities.draw_utils import draw_bbox
 from chequeparser.wrappers.bbox import BBox
+from chequeparser.wrappers.textbbox import TextBBox
 
 
 class DetectionResults:
     """Wrapper for detection results from a single image
     Captures the resulting bbox detections into a BBox object
+    Assumes all bboxes are denormalized
     Stores the original input image width and height
     Methods to draw the bbox on a canvas
     """
@@ -29,6 +31,109 @@ class DetectionResults:
     def __len__(self):
         return len(self.bboxes)
 
+    def __getitem__(self, idx):
+        return self.bboxes[idx]
+
+    def to_numpy(self, normalize=False) -> np.ndarray:
+        """Returns bboxes as a numpy array
+        Each bbox object is converted to a numpy array
+        If normalize is True, the bboxes are normalized
+        """
+        if normalize:
+            return np.array(
+                [bbox.normalize(self.width, self.height).values for bbox in self.bboxes]
+            )
+        return np.array([bbox.values for bbox in self.bboxes])
+
+    def group_boxes(self, groups: List[List[int]]):
+        """Returns a new DetectionResults by merging the bboxes
+        len(groups) == number of groups to form
+        Each group i.e groups[i] is a list of indexes
+        """
+        if len(self.bboxes) == 0:
+            return self.empty()
+
+        new_bboxes = [sum([self.bboxes[idx] for idx in group]) for group in groups]
+        return DetectionResults(
+            new_bboxes, self.np_img, self.parent_ds, self.parent_idx
+        )
+
+    def filter_by_region(self, x1: float, y1: float, x2: float, y2: float, thresh=0.95):
+        """Returns a new DetectionResults
+        with only the bboxes within the region provided
+        The region is provided in normalized coordinates
+        as percentages of the image width and height
+        """
+        if len(self.bboxes) == 0:
+            return self.empty()
+        x1 = int(x1 * self.width)
+        y1 = int(y1 * self.height)
+        x2 = int(x2 * self.width)
+        y2 = int(y2 * self.height)
+        region_bbox = BBox(x1, y1, x2, y2, normalized=False)
+        return self.filter_by_bbox(region_bbox, thresh=thresh)
+
+    def filter_by_x_range(self, x1: float, x2: float):
+        """Returns a new DetectionResults
+        with only the bboxes within the x range provided
+        The ranges are provided in normalized coordinates
+        as percentages of the image width
+        """
+        if len(self.bboxes) == 0:
+            return self.empty()
+        x1 = int(x1 * self.width)
+        x2 = int(x2 * self.width)
+
+        return DetectionResults(
+            [bbox for bbox in self.bboxes if bbox.x1 >= x1 and bbox.x2 <= x2],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def expand_bboxes(
+        self, up: float = 0, down: float = 0, left: float = 0, right: float = 0
+    ):
+        """Returns a new DetectionResults
+        with the bboxes expanded by up, down, left, right
+        """
+
+        if len(self.bboxes) == 0:
+            return self.empty()
+        return DetectionResults(
+            [
+                bbox.expand(up * bbox.h, down * bbox.h, left * bbox.w, right * bbox.w)
+                for bbox in self.bboxes
+            ],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def filter_by_idxs(self, idxs: list):
+        """Returns a new DetectionResults
+        with only the bboxes at the indexes provided
+        """
+        if len(self.bboxes) == 0:
+            return self.empty()
+
+        return DetectionResults(
+            [self.bboxes[idx] for idx in idxs],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def filter_by_bbox_dist(self, bbox: BBox, p=2, num_keep=2):
+        """Returns a new DetectionResults
+        with only the closest num_keep bboxes to the provided bbox
+        Use the l-p distance metric.
+        Example: if p=1, use manhattan, p=2, use euclidean etc.
+        """
+        dists = [bbox.dist(bbox2, p=p) for bbox2 in self.bboxes]
+        idxs = np.argsort(dists)[:num_keep]
+        return self.filter_by_idxs(idxs)
+
     def filter_by_labels(self, labels: list, only_max_conf=False, split=True):
         """Returns a new DetectionResults
         with only the bboxes belonging to the list of labels provided
@@ -36,6 +141,9 @@ class DetectionResults:
         is returned for each label
         If split is True, returns a list of DetectionResults for each label
         """
+        if len(self.bboxes) == 0:
+            return self.empty()
+
         valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
         NEG_INF = -9999999
         if only_max_conf:
@@ -77,18 +185,31 @@ class DetectionResults:
             self.parent_idx,
         )
 
-    def filter_by_bbox(self, bbox: BBox, thresh=0.8):
+    def filter_by_bbox(self, bbox: BBox, thresh=0.7):
         """Returns a new DetectionResults
         with only the bboxes that intersect with
         the other bboxes with a threshhold >= thresh
         Assumes bbox is denormalized
         """
         return DetectionResults(
-            [
-                b
-                for b in self.bboxes
-                if b.denormalize(self.width, self.height).is_inside(bbox, thresh)
-            ],
+            [b for b in self.bboxes if b.is_inside(bbox, thresh)],
+            self.np_img,
+            self.parent_ds,
+            self.parent_idx,
+        )
+
+    def filter_by_bbox_text(self, text):
+        """Returns a new DetectionResults
+        with only the bboxes whose texts match the
+        given text. String matching is done in lowercase
+        Assumes bboxes are TextBBoxes
+        """
+        if len(self.bboxes) == 0:
+            return self.empty()
+        if not isinstance(self.bboxes[0], TextBBox):
+            raise NotImplementedError("Only TextBBox supports this operations")
+        return DetectionResults(
+            [b for b in self.bboxes if text.lower() in b.text.lower()],
             self.np_img,
             self.parent_ds,
             self.parent_idx,
@@ -123,12 +244,10 @@ class DetectionResults:
         """Returns a list of crops from the DetectionResults
         Takes each bbox and crops the image
         Returns a list of numpy arrays
+        Assumes bboxes are denormalized
         """
         return [
-            self.np_img[bbox.y1 : bbox.y2, bbox.x1 : bbox.x2]
-            for bbox in map(
-                lambda x: x.denormalize(self.width, self.height), self.bboxes
-            )
+            self.np_img[bbox.y1 : bbox.y2, bbox.x1 : bbox.x2] for bbox in self.bboxes
         ]
 
     def sort_bboxes_lr_(self):
@@ -139,8 +258,9 @@ class DetectionResults:
         self,
         color: tuple = (255, 0, 0),
         alpha=0.7,
-        show_conf=True,
-        show_label=True,
+        show_conf=False,
+        show_label=False,
+        show_text=False,
         display=True,
     ) -> np.ndarray:
         """Displays the bboxes on a canvas
@@ -154,20 +274,20 @@ class DetectionResults:
         text_color = white if np.mean(color) < 128 else black
 
         for bbox in self.bboxes:
-            denorm_bbox = bbox
-
-            if bbox.normalized:
-                denorm_bbox = bbox.denormalize(self.width, self.height)
 
             str_label = ""
             if show_label:
                 str_label += f"{bbox.label}"
             if show_conf:
                 str_label += f" {bbox.conf:.2f}"
+            if show_text:
+                if not isinstance(bbox, TextBBox):
+                    raise NotImplementedError("Only TextBBox supports this operations")
+                str_label += f" {bbox.text}"
 
             canvas = draw_bbox(
                 canvas,
-                denorm_bbox.values,
+                bbox.values,
                 str_label,
                 color=color,
                 text_color=text_color,

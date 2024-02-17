@@ -1,6 +1,8 @@
 from functools import partial
 
 from doctr.models import detection_predictor, recognition_predictor
+from google.cloud import storage
+from google.oauth2 import service_account
 from ultralytics import RTDETR, YOLO
 
 
@@ -31,3 +33,9 @@ class DOCTR_DETECT_PRETRAINED(metaclass=BaseArch):
     @staticmethod
     def load(**kwargs):
         return partial(detection_predictor, pretrained=True, **kwargs)
+
+
+class GCV_DETECT_RECOG(metaclass=BaseArch):
+    @staticmethod
+    def load(**kwargs):
+        return service_account.Credentials.from_service_account_file(**kwargs)

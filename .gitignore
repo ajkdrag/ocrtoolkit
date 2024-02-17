@@ -111,3 +111,4 @@ venv.bak/
 # data
 data/
 pretrained/
+resources/

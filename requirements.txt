@@ -6,3 +6,4 @@ tqdm
 loguru
 ultralytics
 python-doctr[torch]
+symspellpy

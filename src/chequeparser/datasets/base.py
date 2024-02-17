@@ -1,5 +1,6 @@
 import math
 from functools import partial
+from typing import Union
 
 from chequeparser.utilities.img_utils import (
     apply_ops,

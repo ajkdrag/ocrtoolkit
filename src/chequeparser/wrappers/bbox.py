@@ -1,9 +1,13 @@
+from typing import List
+
 import cv2
 import numpy as np
 
 
 class BBox:
-    def __init__(self, x1, y1, x2, y2, normalized=True, conf=1.0, label="0"):
+    """Wrapper for bounding box"""
+
+    def __init__(self, x1, y1, x2, y2, normalized=False, conf=1.0, label="0"):
         self.x1 = x1 if normalized else int(x1)
         self.y1 = y1 if normalized else int(y1)
         self.x2 = x2 if normalized else int(x2)
@@ -18,26 +22,22 @@ class BBox:
         self.label = label
         self.area = self.w * self.h
         self.eps_area = self.area if self.area > self.eps else self.eps
+        self.values = [self.x1, self.y1, self.x2, self.y2]
 
-    @property
-    def values(self):
-        """Returns coords in the order [x1, y1, x2, y2]"""
-        return [self.x1, self.y1, self.x2, self.y2]
+    @classmethod
+    def from_xywh(cls, x, y, w, h, normalized=False, conf=1.0, label="0"):
+        return cls(x, y, x + w, y + h, normalized, conf, label)
 
-    @staticmethod
-    def from_xywh(x, y, w, h, normalized=True, conf=1.0, label="0"):
-        return BBox(x, y, x + w, y + h, normalized, conf, label)
-
-    @staticmethod
-    def from_cxcywh(cx, cy, w, h, normalized=True, conf=1.0, label="0"):
-        return BBox(
+    @classmethod
+    def from_cxcywh(cls, cx, cy, w, h, normalized=False, conf=1.0, label="0"):
+        return cls(
             cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, normalized, conf, label
         )
 
     def denormalize(self, width, height):
         if not self.normalized:
             return self
-        return BBox(
+        return self.__class__(
             self.x1 * width,
             self.y1 * height,
             self.x2 * width,
@@ -50,12 +50,24 @@ class BBox:
     def normalize(self, width, height):
         if self.normalized:
             return self
-        return BBox(
+        return self.__class__(
             self.x1 / width,
             self.y1 / height,
             self.x2 / width,
             self.y2 / height,
             normalized=True,
+            conf=self.conf,
+            label=self.label,
+        )
+
+    def expand(self, up, down, left, right):
+        """Expands the bounding box by up, down, left, right"""
+        return self.__class__(
+            self.x1 - left,
+            self.y1 - up,
+            self.x2 + right,
+            self.y2 + down,
+            normalized=self.normalized,
             conf=self.conf,
             label=self.label,
         )
@@ -83,6 +95,47 @@ class BBox:
         A = self.eps_area
         return IA / A >= thresh
 
+    def dist(self, other: "BBox", p=2):
+        """Returns the l-p distance between two bboxes"""
+        assert p > 0, "p should be > 0"
+        assert self.normalized == other.normalized, "Normalization is different"
+        return ((self.x1 - other.x1) ** p + (self.y1 - other.y1) ** p) ** (1 / p)
+
+    def as_dict(self):
+        return {
+            "x1": self.x1,
+            "y1": self.y1,
+            "x2": self.x2,
+            "y2": self.y2,
+            "conf": self.conf,
+            "label": self.label,
+        }
+
+    def __add__(self, other):
+        """Returns a new BBox
+        with the union of self and other
+        Assumes same normalization states for both boxes
+        Combines the content of both boxes.
+        New box's conf is the max of the confs of the two boxes
+        """
+        if isinstance(other, self.__class__):
+            assert self.normalized == other.normalized, "Normalization is different"
+            x1 = min(self.x1, other.x1)
+            y1 = min(self.y1, other.y1)
+            x2 = max(self.x2, other.x2)
+            y2 = max(self.y2, other.y2)
+            return self.__class__(
+                x1,
+                y1,
+                x2,
+                y2,
+                normalized=self.normalized,
+                conf=max(self.conf, other.conf),
+                label=self.label,
+            )
+        return self
+
     def __repr__(self):
-        rpr = {"x1": self.x1, "y1": self.y1, "x2": self.x2, "y2": self.y2}
-        return str(rpr)
+        return str(self.as_dict())
+
+    __radd__ = __add__
