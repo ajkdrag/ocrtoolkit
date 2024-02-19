@@ -1,7 +1,6 @@
 from functools import partial
 
 from doctr.models import detection_predictor, recognition_predictor
-from google.cloud import storage
 from google.oauth2 import service_account
 from ultralytics import RTDETR, YOLO
 

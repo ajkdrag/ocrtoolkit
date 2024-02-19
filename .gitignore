@@ -112,3 +112,4 @@ venv.bak/
 data/
 pretrained/
 resources/
+temp/

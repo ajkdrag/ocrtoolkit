@@ -14,15 +14,13 @@ def concat_ds(l_ds: List[BaseDS], reset_names=False) -> BaseDS:
         return l_ds[0]
 
     concatenated_ds = l_ds[0].__class__(
-        source=[item for ds in l_ds for item in ds.items],
+        items=[item for ds in l_ds for item in ds.items],
         names=[name for ds in l_ds for name in ds.names],
-        l_parent_idx=[parent_idx for ds in l_ds for parent_idx in ds.l_parent_idx],
-        parent_ds=l_ds[0].parent_ds,
         batched=False,
         apply_gs=l_ds[0].apply_gs,
         size=l_ds[0].size,
     )
 
     if reset_names:
-        concatenated_ds.reset_names()
+        concatenated_ds._setup_names()
     return concatenated_ds

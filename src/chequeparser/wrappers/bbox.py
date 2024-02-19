@@ -1,4 +1,5 @@
-from typing import List
+from ast import literal_eval
+from typing import List, Union
 
 import cv2
 import numpy as np
@@ -7,7 +8,28 @@ import numpy as np
 class BBox:
     """Wrapper for bounding box"""
 
-    def __init__(self, x1, y1, x2, y2, normalized=False, conf=1.0, label="0"):
+    x1: Union[int, float]
+    y1: Union[int, float]
+    x2: Union[int, float]
+    y2: Union[int, float]
+    normalized: bool
+    conf: float
+    label: str
+    text: str
+    text_conf: float
+
+    def __init__(
+        self,
+        x1,
+        y1,
+        x2,
+        y2,
+        normalized=False,
+        conf=1.0,
+        label="0",
+        text="",
+        text_conf=0,
+    ):
         self.x1 = x1 if normalized else int(x1)
         self.y1 = y1 if normalized else int(y1)
         self.x2 = x2 if normalized else int(x2)
@@ -23,15 +45,37 @@ class BBox:
         self.area = self.w * self.h
         self.eps_area = self.area if self.area > self.eps else self.eps
         self.values = [self.x1, self.y1, self.x2, self.y2]
+        self.text = text
+        self.text_conf = text_conf
+
+    def set_text_and_confidence(
+        self, text_and_conf: Union[tuple, "RecognitionResults"]
+    ):
+        if isinstance(text_and_conf, tuple):
+            self.text, self.text_conf = text_and_conf
+        else:
+            self.text, self.text_conf = text_and_conf.text, text_and_conf.conf
 
     @classmethod
-    def from_xywh(cls, x, y, w, h, normalized=False, conf=1.0, label="0"):
-        return cls(x, y, x + w, y + h, normalized, conf, label)
+    def from_xywh(
+        cls, x, y, w, h, normalized=False, conf=1.0, label="0", text="", text_conf=0
+    ):
+        return cls(x, y, x + w, y + h, normalized, conf, label, text, text_conf)
 
     @classmethod
-    def from_cxcywh(cls, cx, cy, w, h, normalized=False, conf=1.0, label="0"):
+    def from_cxcywh(
+        cls, cx, cy, w, h, normalized=False, conf=1.0, label="0", text="", text_conf=0
+    ):
         return cls(
-            cx - w / 2, cy - h / 2, cx + w / 2, cy + h / 2, normalized, conf, label
+            cx - w / 2,
+            cy - h / 2,
+            cx + w / 2,
+            cy + h / 2,
+            normalized,
+            conf,
+            label,
+            text,
+            text_conf,
         )
 
     def denormalize(self, width, height):
@@ -45,6 +89,8 @@ class BBox:
             normalized=False,
             conf=self.conf,
             label=self.label,
+            text=self.text,
+            text_conf=self.text_conf,
         )
 
     def normalize(self, width, height):
@@ -58,6 +104,8 @@ class BBox:
             normalized=True,
             conf=self.conf,
             label=self.label,
+            text=self.text,
+            text_conf=self.text_conf,
         )
 
     def expand(self, up, down, left, right):
@@ -70,6 +118,8 @@ class BBox:
             normalized=self.normalized,
             conf=self.conf,
             label=self.label,
+            text=self.text,
+            text_conf=self.text_conf,
         )
 
     def intersection_area(self, other: "BBox"):
@@ -101,14 +151,74 @@ class BBox:
         assert self.normalized == other.normalized, "Normalization is different"
         return ((self.x1 - other.x1) ** p + (self.y1 - other.y1) ** p) ** (1 / p)
 
-    def as_dict(self):
+    def apply_text_op(self, op, lowercase=False):
+        new_text = self.text.lower() if lowercase else self.text
+        new_text = op(new_text)
+        return self.__class__(
+            self.x1,
+            self.y1,
+            self.x2,
+            self.y2,
+            self.normalized,
+            self.conf,
+            self.label,
+            text=new_text,
+            text_conf=self.text_conf,
+        )
+
+    def to_numpy(self):
+        """Returns a numpy array
+        with all the values of the BBox
+        as well as the label and conf
+        Also encodes each item to UTF-8
+        """
+        np_arr = np.array(
+            [
+                self.x1,
+                self.y1,
+                self.x2,
+                self.y2,
+                self.normalized,
+                self.conf,
+                self.label,
+                self.text,
+                self.text_conf,
+            ]
+        )
+        return np.char.encode(np_arr, "UTF-8")
+
+    @classmethod
+    def from_numpy(cls, arr):
+        """Returns a BBox from a numpy array
+        Casting is done explicitly
+        """
+        arr = np.char.decode(arr.astype(np.bytes_), "UTF-8")
+        # arr = np.array(
+        #    [item.decode() if isinstance(item, bytes) else item for item in arr]
+        # )
+        return cls(
+            float(arr[0]),
+            float(arr[1]),
+            float(arr[2]),
+            float(arr[3]),
+            literal_eval(arr[4]),
+            float(arr[5]),
+            str(arr[6]),
+            str(arr[7]),
+            float(arr[8]),
+        )
+
+    def to_dict(self):
         return {
             "x1": self.x1,
             "y1": self.y1,
             "x2": self.x2,
             "y2": self.y2,
+            "normalized": self.normalized,
             "conf": self.conf,
             "label": self.label,
+            "text": self.text,
+            "text_conf": self.text_conf,
         }
 
     def __add__(self, other):
@@ -132,10 +242,12 @@ class BBox:
                 normalized=self.normalized,
                 conf=max(self.conf, other.conf),
                 label=self.label,
+                text=" ".join([self.text, other.text]),
+                text_conf=max(self.text_conf, other.text_conf),
             )
         return self
 
     def __repr__(self):
-        return str(self.as_dict())
+        return str(self.to_dict())
 
     __radd__ = __add__

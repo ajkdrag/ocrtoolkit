@@ -39,5 +39,7 @@ class UltralyticsDetect(BaseDetect):
                 BBox(*bbox, conf=conf, label=label, normalized=False)
                 for bbox, conf, label in zip(l_coords, l_confs, l_labels)
             ]
-            l_results.append(DetectionResults(l_bboxes, image))
+            l_results.append(
+                DetectionResults(l_bboxes, width=image.shape[1], height=image.shape[0])
+            )
         return l_results

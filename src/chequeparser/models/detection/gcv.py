@@ -5,8 +5,8 @@ import numpy as np
 from google.cloud import vision_v1 as vision
 
 from chequeparser.models.detection.base import BaseDetect
+from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.textbbox import TextBBox
 
 
 class GCVDetect(BaseDetect):
@@ -26,9 +26,11 @@ class GCVDetect(BaseDetect):
         for image in images:
             b64_img = cv2.imencode(".jpg", image)[1].tostring()
             vision_image = vision.types.Image(content=b64_img)
-            response = self.client.text_detection(image=vision_image)
+            response = self.client.document_text_detection(image=vision_image)
             l_bboxes = self.get_bounding_boxes(response)
-            l_results.append(DetectionResults(l_bboxes, image))
+            l_results.append(
+                DetectionResults(l_bboxes, width=image.shape[1], height=image.shape[0])
+            )
         return l_results
 
     @staticmethod
@@ -50,7 +52,7 @@ class GCVDetect(BaseDetect):
                 y2 = max(vertices[:, 1])
 
                 text = text_annotation.description
-                bbox = TextBBox(x1, y1, x2, y2, normalized=False)
+                bbox = BBox(x1, y1, x2, y2, normalized=False)
                 bbox.set_text_and_confidence(text, 1.0)
                 bounding_boxes.append(bbox)
 

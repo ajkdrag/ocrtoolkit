@@ -1,3 +1,4 @@
+import io
 from typing import Union
 
 import numpy as np
@@ -22,6 +23,18 @@ def tfm_to_size(img: Image, size: tuple):
 def tfm_to_3ch(img: Image):
     """Converts image to 3 channel"""
     return img.convert("RGB")
+
+
+def pil_to_bytes(img: Image, format="JPEG"):
+    """Converts PIL image to bytes"""
+    image_buffer = io.BytesIO()
+    img.save(image_buffer, format=format)
+    return image_buffer.getvalue()
+
+
+def bytes_to_pil(image_bytes: bytes):
+    """Converts bytes to PIL image"""
+    return Image.open(io.BytesIO(image_bytes))
 
 
 def apply_ops(img: Image, ops):

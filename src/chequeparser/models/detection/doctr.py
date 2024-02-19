@@ -6,8 +6,8 @@ from loguru import logger
 
 from chequeparser.models.arch import BaseArch
 from chequeparser.models.detection.base import BaseDetect
+from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.textbbox import TextBBox
 
 
 class DoctrDetect(BaseDetect):
@@ -39,10 +39,12 @@ class DoctrDetect(BaseDetect):
             l_labels = ["0"] * len(l_confs)
             l_coords = preds[:, :4].tolist()
             l_bboxes = [
-                TextBBox(*bbox, conf=conf, label=label, normalized=True).denormalize(
+                BBox(*bbox, conf=conf, label=label, normalized=True).denormalize(
                     image.shape[1], image.shape[0]
                 )
                 for bbox, conf, label in zip(l_coords, l_confs, l_labels)
             ]
-            l_results.append(DetectionResults(l_bboxes, image))
+            l_results.append(
+                DetectionResults(l_bboxes, width=image.shape[1], height=image.shape[0])
+            )
         return l_results

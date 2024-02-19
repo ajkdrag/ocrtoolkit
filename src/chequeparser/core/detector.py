@@ -1,6 +1,7 @@
 import numpy as np
 from loguru import logger
 from PIL import Image
+from tqdm.autonotebook import tqdm
 
 from chequeparser.datasets.base import BaseDS
 from chequeparser.models.detection.base import BaseDetect
@@ -11,16 +12,14 @@ def _detect(model: BaseDetect, ds: BaseDS, **kwargs):
         for idx, img in enumerate(ds):
             np_img = model.preprocess(np.array(img))
             det_results = model.predict(np_img, **kwargs)
-            det_results.parent_ds = ds
-            det_results.parent_idx = idx
+            det_results.img_name = ds.names[idx]
             yield det_results
     else:
         l_np_imgs = [np.array(img) for img in ds]
         l_inputs = model.preprocess_batch(l_np_imgs)
         l_det_results = model.predict_batch(l_inputs, **kwargs)
         for idx, det_results in enumerate(l_det_results):
-            det_results.parent_ds = ds
-            det_results.parent_idx = idx
+            det_results.img_name = ds.names[idx]
             yield det_results
 
 
@@ -32,9 +31,10 @@ def detect(model: BaseDetect, ds: BaseDS, stream=True, **kwargs):
     Images should be converted to np.ndarray before calling preprocess
     """
     # TODO: Use a single predict method for batched and non-batched
-    logger.info("Stream mode: {}", stream)
-    logger.info("Batched mode: {}", ds.batched)
-    logger.info("Running predict on {} samples", len(ds))
+    if kwargs.get("verbose", True):
+        logger.info("Stream mode: {}", stream)
+        logger.info("Batched mode: {}", ds.batched)
+        logger.info("Running predict on {} samples", len(ds))
     gen = _detect(model, ds, **kwargs)
     if stream:
         return gen

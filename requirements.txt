@@ -7,3 +7,4 @@ loguru
 ultralytics
 python-doctr[torch]
 symspellpy
+h5py

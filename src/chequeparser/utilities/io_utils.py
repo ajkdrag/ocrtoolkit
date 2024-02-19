@@ -1,10 +1,13 @@
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
+import h5py
 from loguru import logger
 from tqdm.autonotebook import tqdm
 
 from chequeparser.utilities.misc import filter_list
+from chequeparser.wrappers.bbox import BBox
+from chequeparser.wrappers.detection_results import DetectionResults
 
 
 def get_image_files(
@@ -52,3 +55,32 @@ def change_suffixes(
     logger.warn("Found {} non-existent files".format(len(l_nonexistent)))
     logger.warn("Few samples: {}".format(l_nonexistent))
     return l_filtered
+
+
+def save_dets(l_dets: List["DetectionResults"], path: str):
+    with h5py.File(path, "w") as f:
+        group = f.create_group("dets")
+        for idx, dets in enumerate(l_dets):
+            npy_bboxes = dets.to_numpy().astype("S64")
+            dset = group.create_dataset(f"dets_{idx}", data=npy_bboxes)
+            dset.attrs["width"] = dets.width
+            dset.attrs["height"] = dets.height
+            dset.attrs["img_name"] = dets.img_name
+        logger.info(f"Detections saved to {path}")
+
+
+def load_dets(path: str) -> List["DetectionResults"]:
+    with h5py.File(path, "r") as f:
+        l_dets = []
+        group = f["dets"]
+        dets_keys = sorted(group.keys(), key=lambda x: int(x.split("_")[-1]))
+        for key in dets_keys:
+            dets_width = int(group[key].attrs["width"])
+            dets_height = int(group[key].attrs["height"])
+            dets_img_name = str(group[key].attrs["img_name"])
+            dets_data = group[key][()]
+            l_bboxes = [BBox.from_numpy(bbox) for bbox in dets_data]
+            l_dets.append(
+                DetectionResults(l_bboxes, dets_width, dets_height, dets_img_name)
+            )
+        return l_dets

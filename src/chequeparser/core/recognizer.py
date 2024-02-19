@@ -27,9 +27,10 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
 
 
 def recognize(model: BaseRecognize, ds: BaseDS, stream=True, **kwargs):
-    logger.info("Stream mode: {}", stream)
-    logger.info("Batched mode: {}", ds.batched)
-    logger.info("Running predict on {} samples", len(ds))
+    if kwargs.get("verbose", True):
+        logger.info("Stream mode: {}", stream)
+        logger.info("Batched mode: {}", ds.batched)
+        logger.info("Running predict on {} samples", len(ds))
     gen = _recognize(model, ds, **kwargs)
     if stream:
         return gen

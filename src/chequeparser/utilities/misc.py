@@ -1,3 +1,5 @@
+import base64
+import os
 import random
 from pathlib import Path
 from typing import List
@@ -5,6 +7,10 @@ from typing import List
 import numpy as np
 from loguru import logger
 from PIL import Image
+
+
+def get_uuid(num_chars=8):
+    return base64.urlsafe_b64encode(os.urandom(num_chars)).decode("ascii")
 
 
 def is_var_file(var):
