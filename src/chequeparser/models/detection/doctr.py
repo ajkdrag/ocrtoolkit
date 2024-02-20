@@ -16,6 +16,7 @@ class DoctrDetect(BaseDetect):
     loader: Any
     network: Any
     arch_config: dict
+    valid_kwargs = set()
 
     def __init__(self, arch, path=None, arch_config=None):
         self.path = path
@@ -29,7 +30,10 @@ class DoctrDetect(BaseDetect):
     def predict_batch(
         self, images: List[np.ndarray], **kwargs
     ) -> List[DetectionResults]:
-        l_preds = self.network(images, **kwargs)
+        filtered_kwargs = {
+            key: value for key, value in kwargs.items() if key in self.valid_kwargs
+        }
+        l_preds = self.network(images, **filtered_kwargs)
         l_loc_preds = [list(loc_pred.values())[0] for loc_pred in l_preds]
         l_loc_preds = self.doctr_base_predictor._remove_padding(images, l_loc_preds)
 

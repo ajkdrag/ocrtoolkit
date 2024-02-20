@@ -14,6 +14,7 @@ class DoctrRecognize(BaseRecognize):
     loader: Any
     network: Any
     arch_config: dict
+    valid_kwargs = set()
 
     def __init__(self, arch, path=None, arch_config=None):
         self.path = path
@@ -26,7 +27,10 @@ class DoctrRecognize(BaseRecognize):
     def predict_batch(
         self, images: List[np.ndarray], **kwargs
     ) -> List[RecognitionResults]:
-        l_preds = self.network(images, **kwargs)
+        filtered_kwargs = {
+            key: value for key, value in kwargs.items() if key in self.valid_kwargs
+        }
+        l_preds = self.network(images, **filtered_kwargs)
         l_results = []
         for image, preds in zip(images, l_preds):
             text, conf = preds

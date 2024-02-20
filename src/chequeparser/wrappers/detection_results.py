@@ -7,7 +7,7 @@ from doctr.models.builder import DocumentBuilder
 
 from chequeparser.datasets.imageds import ImageDS
 from chequeparser.utilities.draw_utils import draw_bbox
-from chequeparser.utilities.misc import get_uuid
+from chequeparser.utilities.misc import get_uuid, get_samples
 from chequeparser.wrappers.bbox import BBox
 
 
@@ -51,7 +51,9 @@ class DetectionResults:
             bboxes = [bbox.normalize(self.width, self.height) for bbox in self.bboxes]
         return np.array([bbox.to_numpy() for bbox in bboxes])
 
-    def group_bboxes(self, groups: Optional[List[List[int]]] = None, **kwargs):
+    def group_bboxes(self, groups: Optional[List[List[int]]] = None,
+                     detect_lines=False,
+                     **kwargs):
         """Returns a new DetectionResults by merging the bboxes
         If groups is not provided, uses DocTr's default grouping to form them
         len(groups) == number of groups to form
@@ -61,13 +63,24 @@ class DetectionResults:
             return self.empty()
 
         if groups is None:
-            doc_builder = DocumentBuilder(export_as_straight_boxes=True, **kwargs)
-            npy_dets = self.to_numpy(normalize=True)
-            npy_bboxes = npy_dets[:, :4].astype(np.float32)
-            groups = doc_builder._resolve_lines(npy_bboxes)
+            if detect_lines:
+                doc_builder = DocumentBuilder(export_as_straight_boxes=True, **kwargs)
+                npy_dets = self.to_numpy(normalize=True)
+                npy_bboxes = npy_dets[:, :4].astype(np.float32)
+                groups = doc_builder._resolve_lines(npy_bboxes)
+            else:
+                groups = [range(len(self.bboxes))]
 
         new_bboxes = [sum([self.bboxes[idx] for idx in group]) for group in groups]
-        return DetectionResults(new_bboxes, self.img_name)
+        return DetectionResults(new_bboxes, 
+                                self.width,
+                                self.height,
+                                self.img_name)
+
+    def filter_by_max_conf(self):
+        if len(self.bboxes) == 0:
+            return self.empty()
+        max_conf = max([bbox.conf for bbox in self.bboxes])
 
     def filter_by_region(self, x1: float, y1: float, x2: float, y2: float, thresh=0.95):
         """Returns a new DetectionResults
@@ -101,6 +114,16 @@ class DetectionResults:
             self.width,
             self.height,
             self.img_name,
+        )
+
+    def sample(self, k: int):
+        """Returns a new DetectionResults
+        with k random bboxes.
+        """
+        samples, _ = get_samples(self.bboxes, k)
+        return DetectionResults(
+            samples, 
+            self.width, self.height, self.img_name
         )
 
     def filter_by_idxs(self, idxs: list):
@@ -170,20 +193,23 @@ class DetectionResults:
             self.img_name,
         )
 
-    def filter_by_bbox(self, bbox: BBox, thresh=0.7):
+    def filter_by_bbox(self, bbox: BBox, thresh=0.7, inside=True):
         """Returns a new DetectionResults
         with only the bboxes that intersect with
         the other bboxes with a threshhold >= thresh
         Assumes bbox is denormalized
+        If inside is False, returns the bboxes that
+        do not intersect with the other bboxes.
         """
+        cond = lambda a, b: not (inside ^ a.is_inside(b, thresh))
         return DetectionResults(
-            [b for b in self.bboxes if b.is_inside(bbox, thresh)],
+            [b for b in self.bboxes if cond(b, bbox)],
             self.width,
             self.height,
             self.img_name,
         )
 
-    def filter_by_bbox_text(self, text):
+    def filter_by_bbox_text(self, text, strict=False):
         """Returns a new DetectionResults
         with only the bboxes whose texts match the
         given text. String matching is done in lowercase
@@ -192,8 +218,13 @@ class DetectionResults:
         if len(self.bboxes) == 0:
             return self.empty()
 
+        def match(a, b, strict):
+            if strict:
+                return a.lower() == b.lower()
+            return a.lower() in b.lower()
+
         return DetectionResults(
-            [b for b in self.bboxes if text.lower() in b.text.lower()],
+            [b for b in self.bboxes if match(text, b.text, strict)],
             self.width,
             self.height,
             self.img_name,
@@ -229,9 +260,10 @@ class DetectionResults:
             source_img[bbox.y1 : bbox.y2, bbox.x1 : bbox.x2] for bbox in self.bboxes
         ]
 
-    def sort_bboxes_lr_(self):
+    def sort_bboxes_lr(self):
         """Sorts the bboxes left to right by x coordinate"""
         self.bboxes.sort(key=lambda x: x.x1)
+        return self
 
     def draw(
         self,

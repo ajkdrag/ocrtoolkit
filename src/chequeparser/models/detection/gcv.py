@@ -53,7 +53,7 @@ class GCVDetect(BaseDetect):
 
                 text = text_annotation.description
                 bbox = BBox(x1, y1, x2, y2, normalized=False)
-                bbox.set_text_and_confidence(text, 1.0)
+                bbox.set_text_and_confidence((text, 1.0))
                 bounding_boxes.append(bbox)
 
         return bounding_boxes
