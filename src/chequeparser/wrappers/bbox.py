@@ -166,7 +166,7 @@ class BBox:
             text_conf=self.text_conf,
         )
 
-    def to_numpy(self):
+    def to_numpy(self, encode=True):
         """Returns a numpy array
         with all the values of the BBox
         as well as the label and conf
@@ -185,7 +185,9 @@ class BBox:
                 self.text_conf,
             ]
         )
-        return np.char.encode(np_arr, "UTF-8")
+        if encode:
+            return np.char.encode(np_arr, "UTF-8")
+        return np_arr
 
     @classmethod
     def from_numpy(cls, arr):

@@ -16,7 +16,7 @@ class UltralyticsDetect(BaseDetect):
     network: Any
     arch_config: dict
 
-    def __init__(self, path, arch, arch_config=None):
+    def __init__(self, arch, path, arch_config=None):
         self.path = path
         self.arch = arch
         self.arch_config = arch_config if arch_config else {}

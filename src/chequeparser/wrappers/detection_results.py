@@ -7,7 +7,7 @@ from doctr.models.builder import DocumentBuilder
 
 from chequeparser.datasets.imageds import ImageDS
 from chequeparser.utilities.draw_utils import draw_bbox
-from chequeparser.utilities.misc import get_uuid, get_samples
+from chequeparser.utilities.misc import get_samples, get_uuid
 from chequeparser.wrappers.bbox import BBox
 
 
@@ -29,6 +29,7 @@ class DetectionResults:
         self.width = width
         self.height = height
         self.img_name = img_name
+        self.bboxes = [bbox.denormalize(self.width, self.height) for bbox in bboxes]
 
     def __len__(self):
         return len(self.bboxes)
@@ -36,7 +37,7 @@ class DetectionResults:
     def __getitem__(self, idx):
         return self.bboxes[idx]
 
-    def to_numpy(self, normalize=False) -> np.ndarray:
+    def to_numpy(self, normalize=False, encode=True) -> np.ndarray:
         """Returns bboxes as a numpy array
         Each bbox object is converted to a numpy array
         If normalize is True, the bboxes are normalized
@@ -49,18 +50,18 @@ class DetectionResults:
         bboxes = self.bboxes
         if normalize:
             bboxes = [bbox.normalize(self.width, self.height) for bbox in self.bboxes]
-        return np.array([bbox.to_numpy() for bbox in bboxes])
+        return np.array([bbox.to_numpy(encode=encode) for bbox in bboxes])
 
-    def group_bboxes(self, groups: Optional[List[List[int]]] = None,
-                     detect_lines=False,
-                     **kwargs):
+    def group_bboxes(
+        self, groups: Optional[List[List[int]]] = None, detect_lines=False, **kwargs
+    ):
         """Returns a new DetectionResults by merging the bboxes
         If groups is not provided, uses DocTr's default grouping to form them
         len(groups) == number of groups to form
         Each group i.e groups[i] is a list of indexes
         """
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
 
         if groups is None:
             if detect_lines:
@@ -72,14 +73,11 @@ class DetectionResults:
                 groups = [range(len(self.bboxes))]
 
         new_bboxes = [sum([self.bboxes[idx] for idx in group]) for group in groups]
-        return DetectionResults(new_bboxes, 
-                                self.width,
-                                self.height,
-                                self.img_name)
+        return DetectionResults(new_bboxes, self.width, self.height, self.img_name)
 
     def filter_by_max_conf(self):
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
         max_conf = max([bbox.conf for bbox in self.bboxes])
 
     def filter_by_region(self, x1: float, y1: float, x2: float, y2: float, thresh=0.95):
@@ -89,7 +87,7 @@ class DetectionResults:
         as percentages of the image width and height
         """
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
         x1 = int(x1 * self.width)
         y1 = int(y1 * self.height)
         x2 = int(x2 * self.width)
@@ -105,7 +103,7 @@ class DetectionResults:
         """
 
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
         return DetectionResults(
             [
                 bbox.expand(up * bbox.h, down * bbox.h, left * bbox.w, right * bbox.w)
@@ -121,17 +119,14 @@ class DetectionResults:
         with k random bboxes.
         """
         samples, _ = get_samples(self.bboxes, k)
-        return DetectionResults(
-            samples, 
-            self.width, self.height, self.img_name
-        )
+        return DetectionResults(samples, self.width, self.height, self.img_name)
 
     def filter_by_idxs(self, idxs: list):
         """Returns a new DetectionResults
         with only the bboxes at the indexes provided
         """
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
 
         return DetectionResults(
             [self.bboxes[idx] for idx in idxs], self.width, self.height, self.img_name
@@ -155,7 +150,7 @@ class DetectionResults:
         If split is True, returns a list of DetectionResults for each label
         """
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
 
         valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
         NEG_INF = -9999999
@@ -216,7 +211,7 @@ class DetectionResults:
         Assumes bboxes are TextBBoxes
         """
         if len(self.bboxes) == 0:
-            return self.empty()
+            return self.new()
 
         def match(a, b, strict):
             if strict:
@@ -230,9 +225,11 @@ class DetectionResults:
             self.img_name,
         )
 
-    def empty(self):
+    def new(self, bboxes=None):
         """Returns an empty DetectionResults like self"""
-        return DetectionResults([], self.width, self.height, self.img_name)
+        if bboxes is None:
+            bboxes = []
+        return DetectionResults(bboxes, self.width, self.height, self.img_name)
 
     def create_ds(self, parent_ds: "BaseDS"):
         """Creates an ImageDS from the crops of the DetectionResults"""
