@@ -3,12 +3,20 @@ from pathlib import Path
 from typing import List, Union
 
 import h5py
+from PIL import Image
 from loguru import logger
 from tqdm.autonotebook import tqdm
 
 from chequeparser.utilities.misc import filter_list
 from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
+
+
+def convert_tif_to_jpg(path_tif: Path, path_jpeg: Path, ext=".jpg"):
+    path_jpeg.mkdir(parents=True, exist_ok=True)
+    for item in tqdm(list(path_tif.glob("*.tif"))):
+        img = Image.open(item).convert("RGB")
+        img.save(path_jpeg / Path(item.name).with_suffix(ext))
 
 
 def get_files(
