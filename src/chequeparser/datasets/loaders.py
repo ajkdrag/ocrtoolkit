@@ -21,13 +21,14 @@ def load_yolo(path: str, subset="train") -> Tuple["BaseDS", List["DetectionResul
         class_names = d["names"]
         p_images = Path(d[subset])
         p_labels = p_images.parent.joinpath("labels")
-        logger.info(f"Loading labels from {p_labels}")
-        all_labels = get_files(p_labels, exts=[".txt"])
-        corr_images = change_suffixes(all_labels, ".jpg", ref_dir=p_images)
-        ds = FileDS(items=corr_images, size=None)
+        all_images = get_files(p_images)
+        corr_labels = change_suffixes(all_images, ".txt", ref_dir=p_labels)
+        all_labels_wo_ext = set([Path(label).stem for label in corr_labels])
+        valid_images = [img for img in all_images if Path(img).stem in all_labels_wo_ext]
+        ds = FileDS(items=valid_images, size=None)
 
-        for f_img, f_label in zip(corr_images, all_labels):
-            img_name = f_img.name
+        for f_img, f_label in zip(valid_images, corr_labels):
+            img_name = Path(f_img).name
             img = ds[img_name]
             l_str_bboxes = open(f_label, "r").readlines()
             l_bboxes = []
@@ -42,4 +43,4 @@ def load_yolo(path: str, subset="train") -> Tuple["BaseDS", List["DetectionResul
                 l_bboxes.append(l_bbox)
             l_dets.append(DetectionResults(l_bboxes, img.width, img.height, img_name))
 
-        return l_dets, ds
+        return ds, l_dets
