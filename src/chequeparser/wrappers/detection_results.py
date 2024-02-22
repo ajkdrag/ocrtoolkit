@@ -24,18 +24,25 @@ class DetectionResults:
     height: int
     img_name: str
 
-    def __init__(self, bboxes, width, height, img_name=""):
+    def __init__(self, bboxes, width, height, img_name="", denormalize=True):
         self.bboxes = bboxes
         self.width = width
         self.height = height
         self.img_name = img_name
-        self.bboxes = [bbox.denormalize(self.width, self.height) for bbox in bboxes]
+        if denormalize:
+            self.bboxes = [bbox.denormalize(self.width, self.height) for bbox in bboxes]
 
     def __len__(self):
         return len(self.bboxes)
 
     def __getitem__(self, idx):
         return self.bboxes[idx]
+    
+    def normalize(self):
+        """Results are denormalized"""
+        d_bboxes = [bbox.normalize(self.width, self.height) for bbox in self.bboxes]
+        return DetectionResults(d_bboxes, self.width, self.height,
+                                self.img_name, denormalize=False)
 
     def to_numpy(self, normalize=False, encode=True) -> np.ndarray:
         """Returns bboxes as a numpy array
