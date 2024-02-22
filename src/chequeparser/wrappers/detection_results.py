@@ -37,12 +37,13 @@ class DetectionResults:
 
     def __getitem__(self, idx):
         return self.bboxes[idx]
-    
+
     def normalize(self):
         """Results are denormalized"""
         d_bboxes = [bbox.normalize(self.width, self.height) for bbox in self.bboxes]
-        return DetectionResults(d_bboxes, self.width, self.height,
-                                self.img_name, denormalize=False)
+        return DetectionResults(
+            d_bboxes, self.width, self.height, self.img_name, denormalize=False
+        )
 
     def to_numpy(self, normalize=False, encode=True) -> np.ndarray:
         """Returns bboxes as a numpy array
