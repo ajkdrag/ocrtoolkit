@@ -12,7 +12,7 @@ def save_dets(l_dets, path: str):
     with h5py.File(path, "w") as f:
         group = f.create_group("dets")
         for idx, dets in enumerate(l_dets):
-            npy_bboxes = dets.to_numpy()
+            npy_bboxes = dets.to_numpy(encode=True)
             dset = group.create_dataset(f"dets_{idx}", data=npy_bboxes)
             dset.attrs["width"] = dets.width
             dset.attrs["height"] = dets.height

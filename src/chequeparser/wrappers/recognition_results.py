@@ -18,7 +18,7 @@ class RecognitionResults:
         conf,
         width,
         height,
-        img_name,
+        img_name="",
     ):
         self.text = text
         self.conf = conf

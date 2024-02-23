@@ -293,18 +293,18 @@ class DetectionResults:
 
         for bbox in self.bboxes:
 
-            str_label = ""
+            labels = []
             if show_label:
-                str_label += f"{bbox.label}"
+                labels.append(bbox.label)
             if show_conf:
-                str_label += f" {bbox.conf:.2f}"
+                labels.append(f"{bbox.conf:.2f}")
             if show_text:
-                str_label += f" {bbox.text}"
+                labels.append(bbox.text)
 
             canvas = draw_bbox(
                 canvas,
                 bbox.values,
-                str_label,
+                " ".join(labels),
                 color=color,
                 text_color=text_color,
             )
