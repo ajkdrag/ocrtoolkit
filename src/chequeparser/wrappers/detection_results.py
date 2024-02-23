@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from doctr.models.builder import DocumentBuilder
 
+from chequeparser.datasets.base import BaseDS
 from chequeparser.datasets.imageds import ImageDS
 from chequeparser.utilities.draw_utils import draw_bbox
 from chequeparser.utilities.misc import get_samples, get_uuid
@@ -45,11 +45,12 @@ class DetectionResults:
             d_bboxes, self.width, self.height, self.img_name, denormalize=False
         )
 
-    def to_numpy(self, normalize=False, encode=True) -> np.ndarray:
+    def to_numpy(self, normalize=False, encode=False, include_meta=False) -> np.ndarray:
         """Returns bboxes as a numpy array
         Each bbox object is converted to a numpy array
         If normalize is True, the bboxes are normalized
         If N=number of bboxes, we have the following np array created:
+        If include_meta is True, add img_name, width, height as well
         1. Nx7 array with the x1, y1, x2, y2, conf, normalized, label
         or
         2. Nx9 array with the x1, y1, x2, y2, conf, normalized, label,
@@ -58,7 +59,14 @@ class DetectionResults:
         bboxes = self.bboxes
         if normalize:
             bboxes = [bbox.normalize(self.width, self.height) for bbox in self.bboxes]
-        return np.array([bbox.to_numpy(encode=encode) for bbox in bboxes])
+        np_arr = np.array([bbox.to_numpy(encode=encode) for bbox in bboxes])
+        if include_meta:
+            metadata = [[self.img_name, self.width, self.height]] * len(bboxes)
+            np_meta = np.array(metadata)
+            if encode:
+                np_meta = np.char.encode(np_meta, "UTF-8")
+            np_arr = np.concatenate([np_arr, np_meta], axis=1)
+        return np_arr
 
     def group_bboxes(
         self, groups: Optional[List[List[int]]] = None, detect_lines=False, **kwargs
@@ -80,13 +88,8 @@ class DetectionResults:
             else:
                 groups = [range(len(self.bboxes))]
 
-        new_bboxes = [sum([self.bboxes[idx] for idx in group]) for group in groups]
+        new_bboxes = [sum(self.bboxes[idx] for idx in group) for group in groups]
         return DetectionResults(new_bboxes, self.width, self.height, self.img_name)
-
-    def filter_by_max_conf(self):
-        if len(self.bboxes) == 0:
-            return self.new()
-        max_conf = max([bbox.conf for bbox in self.bboxes])
 
     def filter_by_region(self, x1: float, y1: float, x2: float, y2: float, thresh=0.95):
         """Returns a new DetectionResults
@@ -161,12 +164,12 @@ class DetectionResults:
             return self.new()
 
         valid_boxes = [bbox for bbox in self.bboxes if bbox.label in labels]
-        NEG_INF = -9999999
+        neg_inf = -9999999
         if only_max_conf:
             dict_max_conf = {}
             for label in labels:
                 dict_max_conf[label] = max(
-                    [NEG_INF]
+                    [neg_inf]
                     + [bbox.conf for bbox in valid_boxes if bbox.label == label]
                 )
             valid_boxes = [
@@ -204,9 +207,8 @@ class DetectionResults:
         If inside is False, returns the bboxes that
         do not intersect with the other bboxes.
         """
-        cond = lambda a, b: not (inside ^ a.is_inside(b, thresh))
         return DetectionResults(
-            [b for b in self.bboxes if cond(b, bbox)],
+            [b for b in self.bboxes if not (inside ^ b.is_inside(bbox, thresh))],
             self.width,
             self.height,
             self.img_name,
@@ -311,5 +313,5 @@ class DetectionResults:
             plt.figure(figsize=(10, 10))
             plt.axis("off")
             plt.imshow(canvas)
-        else:
-            return canvas
+            return None
+        return canvas

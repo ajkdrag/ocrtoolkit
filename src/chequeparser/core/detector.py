@@ -1,10 +1,8 @@
 import numpy as np
 from loguru import logger
-from PIL import Image
-from tqdm.autonotebook import tqdm
 
 from chequeparser.datasets.base import BaseDS
-from chequeparser.models.detection.base import BaseDetect
+from chequeparser.models.detection import BaseDetect
 
 
 def _detect(model: BaseDetect, ds: BaseDS, **kwargs):

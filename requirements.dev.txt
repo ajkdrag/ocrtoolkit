@@ -3,6 +3,7 @@ coverage
 isort
 mypy
 pylint
+flake8
 sphinx
 twine
 wheel

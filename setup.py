@@ -25,6 +25,7 @@ with open('README.rst', 'r') as f:
 with open('CHANGELOG.rst', 'r') as f:
     changes = f.read()
 
+
 def parse_requirements(filename):
     ''' Load requirements from a pip requirements file '''
     with open(filename, 'r') as fd:
@@ -34,6 +35,7 @@ def parse_requirements(filename):
             if line and not line.startswith("#"):
                 lines.append(line)
     return lines
+
 
 requirements = parse_requirements('requirements.txt')
 

@@ -1,8 +1,9 @@
 from ast import literal_eval
-from typing import List, Union
+from typing import Union
 
-import cv2
 import numpy as np
+
+from chequeparser.wrappers.recognition_results import RecognitionResults
 
 
 class BBox:
@@ -166,7 +167,7 @@ class BBox:
             text_conf=self.text_conf,
         )
 
-    def to_numpy(self, encode=True):
+    def to_numpy(self, encode=False):
         """Returns a numpy array
         with all the values of the BBox
         as well as the label and conf

@@ -1,9 +1,4 @@
-from typing import List
-
-from chequeparser.datasets.base import BaseDS
-
-
-def concat_ds(l_ds: List[BaseDS], reset_names=False) -> BaseDS:
+def concat_ds(l_ds, reset_names=False):
     """Concatenates a list of datasets
     Assumes that all datasets are of same type
     Assumes that all datasets stem from same parent_ds

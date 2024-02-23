@@ -2,7 +2,6 @@ import base64
 import os
 import random
 from pathlib import Path
-from typing import List
 
 import numpy as np
 from loguru import logger

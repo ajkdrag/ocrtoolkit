@@ -4,8 +4,9 @@ from typing import List, Tuple
 import yaml
 from loguru import logger
 
+from chequeparser.datasets.base import BaseDS
 from chequeparser.datasets.fileds import FileDS
-from chequeparser.utilities.io_utils import change_suffixes, get_files
+from chequeparser.utilities.io_utils import get_files
 from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
 

@@ -1,7 +1,6 @@
 from typing import Any, List
 
 import numpy as np
-from loguru import logger
 
 from chequeparser.models.arch import BaseArch
 from chequeparser.models.recognition.base import BaseRecognize

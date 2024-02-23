@@ -1,9 +1,8 @@
 import numpy as np
 from loguru import logger
-from PIL import Image
 
 from chequeparser.datasets.base import BaseDS
-from chequeparser.models.recognition.base import BaseRecognize
+from chequeparser.models.recognition import BaseRecognize
 
 
 def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):

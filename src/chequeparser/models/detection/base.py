@@ -3,7 +3,6 @@ from typing import List
 
 import cv2
 import numpy as np
-from loguru import logger
 
 from chequeparser.wrappers.detection_results import DetectionResults
 

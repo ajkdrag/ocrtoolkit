@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 
 from chequeparser.datasets.base import BaseDS
-from chequeparser.utilities.img_utils import apply_ops
 from chequeparser.utilities.io_utils import get_files
 
 

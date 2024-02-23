@@ -22,8 +22,8 @@ class BaseDS:
     names = []
     item_keys = {}
     size = None
-    apply_gs = True
     batched = False
+    apply_gs = True
 
     def __init__(
         self,
@@ -38,8 +38,8 @@ class BaseDS:
         self.items = items
         self.names = names
         self.size = size
-        self.apply_gs = apply_gs
         self.batched = batched
+        self.apply_gs = apply_gs
         self.tfms = [
             tfm_to_pil,
             partial(tfm_to_size, size=size) if size else lambda x: x,
@@ -116,7 +116,7 @@ class BaseDS:
             if isinstance(key, int) and key < 0:
                 key = len(self.items) + key
             item_key = self.item_keys[key]
-        except:
+        except KeyError:
             raise IndexError(f"Key {key} not found")
         return apply_ops(self.items[item_key], self.tfms)
 
