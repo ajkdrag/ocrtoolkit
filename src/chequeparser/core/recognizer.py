@@ -11,18 +11,14 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
         for idx, img in enumerate(ds):
             np_img = model.preprocess(np.array(img))
             recog_results = model.predict(np_img, **kwargs)
-            recog_results.parent_ds = ds
-            recog_results.parent_idx = idx
-            recog_results.label = ds.names[idx]
+            recog_results.img_name = ds.names[idx]
             yield recog_results
     else:
         l_np_imgs = [np.array(img) for img in ds]
         l_inputs = model.preprocess_batch(l_np_imgs)
         l_recog_results = model.predict_batch(l_inputs, **kwargs)
         for idx, recog_results in enumerate(l_recog_results):
-            recog_results.parent_ds = ds
-            recog_results.parent_idx = idx
-            recog_results.label = ds.names[idx]
+            recog_results.img_name = ds.names[idx]
             yield recog_results
 
 

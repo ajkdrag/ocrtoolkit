@@ -34,5 +34,9 @@ class DoctrRecognize(BaseRecognize):
         l_results = []
         for image, preds in zip(images, l_preds):
             text, conf = preds
-            l_results.append(RecognitionResults(text=text, conf=conf, np_img=image))
+            l_results.append(
+                RecognitionResults(
+                    text=text, conf=conf, width=image.shape[1], height=image.shape[0]
+                )
+            )
         return l_results

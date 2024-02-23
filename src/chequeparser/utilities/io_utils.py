@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import List, Union
 
 import h5py
-from PIL import Image
 from loguru import logger
+from PIL import Image
 from tqdm.autonotebook import tqdm
 
 from chequeparser.utilities.misc import filter_list

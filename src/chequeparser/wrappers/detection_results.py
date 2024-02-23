@@ -274,7 +274,6 @@ class DetectionResults:
         self,
         parent_ds: "BaseDS",
         color: tuple = (255, 0, 0),
-        alpha=0.7,
         show_conf=False,
         show_label=False,
         show_text=False,
