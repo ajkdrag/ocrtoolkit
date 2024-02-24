@@ -1,10 +1,12 @@
 import math
+from collections.abc import Iterable
 from functools import partial
 from typing import Union
 
 import h5py
 import numpy as np
 from loguru import logger
+from sklearn.model_selection import train_test_split
 
 from chequeparser.utilities.img_utils import (
     apply_ops,
@@ -120,15 +122,21 @@ class BaseDS:
             raise IndexError(f"Key {key} not found")
         return apply_ops(self.items[item_key], self.tfms)
 
-    def get_as_ds(self, key: Union[int, str]) -> "BaseDS":
+    def get_as_ds(self, key: Union[int, str, slice, Iterable]) -> "BaseDS":
         """Returns new ds with item at index idx if key is integer,
         else returns new ds with item(s) having the name key
         """
-        item_key = self.item_keys.get(key)
+        if isinstance(key, slice):
+            items = self.items[key]
+            names = self.names[key]
+        else:
+            key = key if isinstance(key, Iterable) else (key,)
+            items = [self.items[self.item_keys[k]] for k in key]
+            names = [self.names[self.item_keys[k]] for k in key]
         return self.__class__(
             source=self.source,
-            items=[self.items[item_key]],
-            names=[self.names[item_key]],
+            items=items,
+            names=names,
             batched=self.batched,
             apply_gs=self.apply_gs,
             size=self.size,
@@ -147,6 +155,17 @@ class BaseDS:
     @staticmethod
     def _deserialize_items(items):
         return [item.decode("utf-8") for item in items]
+
+    def train_test_split(self, train_size=0.8, test_size=0.2):
+        """Returns train_ds, test_ds"""
+        assert train_size + test_size <= 1, "train_size + test_size must be <= 1"
+        ids_train, ids_test = train_test_split(
+            range(len(self)), train_size=train_size, test_size=test_size
+        )
+        return (
+            self.get_as_ds(ids_train),
+            self.get_as_ds(ids_test),
+        )
 
     def save(self, path: str):
         items_data = self.__class__._serialize_items(self.items)
