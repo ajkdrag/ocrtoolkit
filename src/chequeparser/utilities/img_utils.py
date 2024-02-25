@@ -1,6 +1,7 @@
 import io
 from typing import Union
 
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -23,6 +24,13 @@ def tfm_to_size(img: Image, size: tuple):
 def tfm_to_3ch(img: Image):
     """Converts image to 3 channel"""
     return img.convert("RGB")
+
+
+def cv2_tfm_to_3ch(img: np.ndarray):
+    """Converts image to 3 channel if gray"""
+    if len(img.shape) == 2:
+        return cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    return img
 
 
 def pil_to_bytes(img: Image, format="JPEG"):

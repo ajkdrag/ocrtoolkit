@@ -2,14 +2,14 @@ import numpy as np
 from loguru import logger
 
 from chequeparser.datasets.base import BaseDS
-from chequeparser.models.recognition import BaseRecognize
+from chequeparser.wrappers.model import RecognitionModel
 
 
-def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
+def _recognize(model: RecognitionModel, ds: BaseDS, **kwargs):
     if not ds.batched:
         for idx, img in enumerate(ds):
-            np_img = model.preprocess(np.array(img))
-            recog_results = model.predict(np_img, **kwargs)
+            l_np_imgs = model.preprocess([np.array(img)])
+            recog_results = model.predict(l_np_imgs, **kwargs)[0]
             recog_results.img_name = ds.names[idx]
             yield recog_results
     else:
@@ -21,7 +21,11 @@ def _recognize(model: BaseRecognize, ds: BaseDS, **kwargs):
             yield recog_results
 
 
-def recognize(model: BaseRecognize, ds: BaseDS, stream=True, **kwargs):
+def recognize(model: RecognitionModel, ds: BaseDS, stream=True, **kwargs):
+    """Recognizes text in a dataset
+    Call model.preprocess methods before model.predict methods
+    Images should be converted to np.ndarray before calling preprocess
+    """
     if kwargs.get("verbose", True):
         logger.info("Stream mode: {}", stream)
         logger.info("Batched mode: {}", ds.batched)

@@ -2,33 +2,30 @@ import numpy as np
 from loguru import logger
 
 from chequeparser.datasets.base import BaseDS
-from chequeparser.models.detection import BaseDetect
+from chequeparser.wrappers.model import DetectionModel
 
 
-def _detect(model: BaseDetect, ds: BaseDS, **kwargs):
+def _detect(model: DetectionModel, ds: BaseDS, **kwargs):
     if not ds.batched:
         for idx, img in enumerate(ds):
-            np_img = model.preprocess(np.array(img))
-            det_results = model.predict(np_img, **kwargs)
+            l_np_imgs = model.preprocess([np.array(img)])
+            det_results = model.predict(l_np_imgs, **kwargs)[0]
             det_results.img_name = ds.names[idx]
             yield det_results
     else:
         l_np_imgs = [np.array(img) for img in ds]
-        l_inputs = model.preprocess_batch(l_np_imgs)
-        l_det_results = model.predict_batch(l_inputs, **kwargs)
+        l_inputs = model.preprocess(l_np_imgs)
+        l_det_results = model.predict(l_inputs, **kwargs)
         for idx, det_results in enumerate(l_det_results):
             det_results.img_name = ds.names[idx]
             yield det_results
 
 
-def detect(model: BaseDetect, ds: BaseDS, stream=True, **kwargs):
+def detect(model: DetectionModel, ds: BaseDS, stream=True, **kwargs):
     """Detects objects in a dataset
-    If ds is not batched, call model.predict(...)
-    If ds is batched, call model.predict_batch(...)
     Call model.preprocess methods before model.predict methods
     Images should be converted to np.ndarray before calling preprocess
     """
-    # TODO: Use a single predict method for batched and non-batched
     if kwargs.get("verbose", True):
         logger.info("Stream mode: {}", stream)
         logger.info("Batched mode: {}", ds.batched)

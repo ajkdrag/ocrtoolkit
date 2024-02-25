@@ -1,4 +1,5 @@
 import base64
+import inspect
 import os
 import random
 from pathlib import Path
@@ -6,6 +7,32 @@ from pathlib import Path
 import numpy as np
 from loguru import logger
 from PIL import Image
+
+
+def delegates(kwargs={}, keep=False):
+    """Decorator: replace `**kwargs` in signature with params from `to`"""
+
+    def _f(f):
+        from_f = f
+        sig = inspect.signature(from_f)
+        sigd = dict(sig.parameters)
+        k = sigd.pop("kwargs")
+        for name, kw in kwargs.items():
+            sigd[name] = inspect.Parameter(
+                name,
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                default={
+                    k: v.default
+                    for k, v in inspect.signature(kw).parameters.items()
+                    if k not in sigd and v.default != inspect.Parameter.empty
+                },
+            )
+        if keep:
+            sigd["kwargs"] = k
+        from_f.__signature__ = sig.replace(parameters=sigd.values())
+        return f
+
+    return _f
 
 
 def get_uuid(num_chars=8):

@@ -1,53 +1,53 @@
-from functools import partial
-
-import torch
-from doctr.models import crnn_vgg16_bn, detection_predictor, recognition_predictor
-from google.oauth2 import service_account
-from loguru import logger
-from ultralytics import RTDETR, YOLO
-
-
-def _load_model_state(path, arch, **kwargs):
-    is_pretrained = path is None
-    pretrained_backbone = kwargs.get("pretrained_backbone", True)
-    model = arch(pretrained=is_pretrained, pretrained_backbone=pretrained_backbone)
-    if not is_pretrained:
-        logger.info(f"Loading model params from {path}")
-        params = torch.load(path)
-        model.load_state_dict(params)
-    return recognition_predictor(arch=model, pretrained=is_pretrained, **kwargs)
-
-
 class BaseArch(type):
-    def __call__(cls, **kwargs):
-        return cls.load(**kwargs)
+    """Base class for all architectures.
+    If path is None, then model is pretrained.
+    """
+
+    def __call__(cls, path=None, device="cpu", model_kwargs: dict = None, **kwargs):
+        if model_kwargs is None:
+            model_kwargs = {}
+        return cls.load(path, device, model_kwargs, **kwargs)
 
 
-class UL_YOLO(metaclass=BaseArch):
+class UL_YOLOV8(metaclass=BaseArch):
     @staticmethod
-    def load(**kwargs):
-        return partial(YOLO, **kwargs)
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.ultralytics as framework
+
+        return framework.load("yolov8", path, device, model_kwargs, **kwargs)
 
 
 class UL_RTDETR(metaclass=BaseArch):
     @staticmethod
-    def load(**kwargs):
-        return partial(RTDETR, **kwargs)
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.ultralytics as framework
+
+        return framework.load("rtdetr", path, device, model_kwargs, **kwargs)
 
 
-class DOCTR_DETECT_PRETRAINED(metaclass=BaseArch):
+class DOCTR_CRNN_VGG16(metaclass=BaseArch):
     @staticmethod
-    def load(**kwargs):
-        return partial(detection_predictor, pretrained=True, **kwargs)
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.doctr as framework
+
+        return framework.load("crnn_vgg16_bn", path, device, model_kwargs, **kwargs)
 
 
-class DOCTR_RECOG_CRNN_VGG16(metaclass=BaseArch):
+class DOCTR_DB_RESNET50(metaclass=BaseArch):
     @staticmethod
-    def load(**kwargs):
-        return partial(_load_model_state, arch=crnn_vgg16_bn, **kwargs)
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.doctr as framework
+
+        return framework.load("db_resnet50", path, device, model_kwargs, **kwargs)
 
 
-class GCV_DETECT_RECOG(metaclass=BaseArch):
+class GCV_OCR(metaclass=BaseArch):
+    """Google Cloud Vision OCR
+    Here `path` arg points to service account json file
+    """
+
     @staticmethod
-    def load(**kwargs):
-        return service_account.Credentials.from_service_account_file(**kwargs)
+    def load(path, _, model_kwargs, **kwargs):
+        import chequeparser.integrations.gcv as framework
+
+        return framework.load(path, model_kwargs, **kwargs)

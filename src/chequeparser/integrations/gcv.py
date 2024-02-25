@@ -1,32 +1,28 @@
-from typing import List
+from typing import List, Optional
 
 import cv2
 import numpy as np
 from google.cloud import vision_v1 as vision
+from google.oauth2 import service_account
 
-from chequeparser.models.detection.base import BaseDetect
 from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
+from chequeparser.wrappers.model import DetectionModel
 
 
-class GCVDetect(BaseDetect):
+class GCVModel(DetectionModel):
     svc_acc_path: str
     client: vision.ImageAnnotatorClient
 
-    def __init__(self, svc_acc_path):
-        self.svc_acc_path = svc_acc_path
-        self.client = vision.ImageAnnotatorClient.from_service_account_file(
-            svc_acc_path
-        )
+    def __init__(self, client, path):
+        super().__init__(model=client, path=path)
 
-    def predict_batch(
-        self, images: List[np.ndarray], **kwargs
-    ) -> List[DetectionResults]:
+    def _predict(self, images: List[np.ndarray], **kwargs) -> List[DetectionResults]:
         l_results = []
         for image in images:
             b64_img = cv2.imencode(".jpg", image)[1].tostring()
             vision_image = vision.types.Image(content=b64_img)
-            response = self.client.document_text_detection(image=vision_image)
+            response = self.model.document_text_detection(image=vision_image)
             l_bboxes = self.get_bounding_boxes(response)
             l_results.append(
                 DetectionResults(l_bboxes, width=image.shape[1], height=image.shape[0])
@@ -57,3 +53,12 @@ class GCVDetect(BaseDetect):
                 bounding_boxes.append(bbox)
 
         return bounding_boxes
+
+
+def load(path: Optional[str], model_kwargs: dict, **kwargs):
+    if path is not None:
+        credentials = service_account.Credentials.from_service_account_file(path)
+        model_kwargs["credentials"] = credentials
+
+    client = vision.ImageAnnotatorClient(credentials=credentials)
+    return GCVModel(client, path)
