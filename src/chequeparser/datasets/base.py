@@ -15,7 +15,7 @@ from chequeparser.utilities.img_utils import (
     tfm_to_pil,
     tfm_to_size,
 )
-from chequeparser.utilities.misc import get_samples
+from chequeparser.utilities.misc_utils import get_samples
 
 
 class BaseDS:

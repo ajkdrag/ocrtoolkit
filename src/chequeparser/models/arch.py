@@ -30,7 +30,9 @@ class DOCTR_CRNN_VGG16(metaclass=BaseArch):
     def load(path, device, model_kwargs, **kwargs):
         import chequeparser.integrations.doctr as framework
 
-        return framework.load("crnn_vgg16_bn", path, device, model_kwargs, **kwargs)
+        return framework.load(
+            "rec", "crnn_vgg16_bn", path, device, model_kwargs, **kwargs
+        )
 
 
 class DOCTR_DB_RESNET50(metaclass=BaseArch):
@@ -38,7 +40,9 @@ class DOCTR_DB_RESNET50(metaclass=BaseArch):
     def load(path, device, model_kwargs, **kwargs):
         import chequeparser.integrations.doctr as framework
 
-        return framework.load("db_resnet50", path, device, model_kwargs, **kwargs)
+        return framework.load(
+            "det", "db_resnet50", path, device, model_kwargs, **kwargs
+        )
 
 
 class GCV_OCR(metaclass=BaseArch):
@@ -51,3 +55,19 @@ class GCV_OCR(metaclass=BaseArch):
         import chequeparser.integrations.gcv as framework
 
         return framework.load(path, model_kwargs, **kwargs)
+
+
+class PPOCR_SVTR_LCNET(metaclass=BaseArch):
+    @staticmethod
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.paddleocr as framework
+
+        return framework.load("rec", "SVTR_LCNet", path, device, model_kwargs, **kwargs)
+
+
+class PPOCR_DBNET(metaclass=BaseArch):
+    @staticmethod
+    def load(path, device, model_kwargs, **kwargs):
+        import chequeparser.integrations.paddleocr as framework
+
+        return framework.load("det", "DB", path, device, model_kwargs, **kwargs)

@@ -199,16 +199,22 @@ class BBox:
         # arr = np.array(
         #    [item.decode() if isinstance(item, bytes) else item for item in arr]
         # )
+        x1, y1, x2, y2 = map(float, arr[:4])
+        normalized = literal_eval(arr[4]) if len(arr) > 4 else False
+        conf = float(arr[5]) if len(arr) > 5 else 1.0
+        label = str(arr[6]) if len(arr) > 6 else "0"
+        text = str(arr[7]) if len(arr) > 7 else ""
+        text_conf = float(arr[8]) if len(arr) > 8 else 1.0
         return cls(
-            float(arr[0]),
-            float(arr[1]),
-            float(arr[2]),
-            float(arr[3]),
-            literal_eval(arr[4]),
-            float(arr[5]),
-            str(arr[6]),
-            str(arr[7]),
-            float(arr[8]),
+            x1,
+            y1,
+            x2,
+            y2,
+            normalized,
+            conf,
+            label,
+            text,
+            text_conf,
         )
 
     def to_dict(self):

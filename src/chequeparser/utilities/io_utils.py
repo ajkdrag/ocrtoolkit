@@ -1,3 +1,4 @@
+import tarfile
 from pathlib import Path
 from typing import Union
 
@@ -5,7 +6,22 @@ from loguru import logger
 from PIL import Image
 from tqdm.autonotebook import tqdm
 
-import chequeparser.utilities.misc as misc_utils
+from chequeparser.utilities.misc_utils import filter_list
+
+
+def extract_files(tar_path: str, tar_file_name_list: list, output_dir: str):
+    """Extracts files from a tar file"""
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(tar_path, "r") as tar:
+        for member in tar.getmembers():
+            for tar_file_name in tar_file_name_list:
+                if member.name.endswith(tar_file_name):
+                    filename = "inference" + tar_file_name
+                    with Path(output_dir).joinpath(filename).open("wb") as f:
+                        f.write(tar.extractfile(member).read())
+                    logger.info(f"Extracted {member.name} ...")
+                    break
 
 
 def convert_tif_to_jpg(path_tif: Path, path_jpeg: Path, ext=".jpg"):
@@ -61,7 +77,7 @@ def change_suffixes(
     def func_tgt(f):
         p_ref_dir.joinpath(f.name).resolve()
 
-    l_filtered, l_nonexistent = misc_utils.filter_list(
+    l_filtered, l_nonexistent = filter_list(
         l_new_files, func_cond, func_tgt, num_samples=3
     )
     if len(l_nonexistent) != 0:

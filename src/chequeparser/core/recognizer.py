@@ -14,8 +14,8 @@ def _recognize(model: RecognitionModel, ds: BaseDS, **kwargs):
             yield recog_results
     else:
         l_np_imgs = [np.array(img) for img in ds]
-        l_inputs = model.preprocess_batch(l_np_imgs)
-        l_recog_results = model.predict_batch(l_inputs, **kwargs)
+        l_inputs = model.preprocess(l_np_imgs)
+        l_recog_results = model.predict(l_inputs, **kwargs)
         for idx, recog_results in enumerate(l_recog_results):
             recog_results.img_name = ds.names[idx]
             yield recog_results

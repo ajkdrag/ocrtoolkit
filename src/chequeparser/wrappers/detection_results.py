@@ -7,7 +7,7 @@ from doctr.models.builder import DocumentBuilder
 from chequeparser.datasets.base import BaseDS
 from chequeparser.datasets.imageds import ImageDS
 from chequeparser.utilities.draw_utils import draw_bbox
-from chequeparser.utilities.misc import get_samples, get_uuid
+from chequeparser.utilities.misc_utils import get_samples, get_uuid
 from chequeparser.wrappers.bbox import BBox
 
 

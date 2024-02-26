@@ -1,34 +1,14 @@
 from typing import List, Optional
 
 import numpy as np
-import torch
 from doctr.models.predictor.base import _OCRPredictor
 from doctr.models.preprocessor import PreProcessor
 
+from chequeparser.utilities.model_utils import load_state_dict
 from chequeparser.wrappers.bbox import BBox
 from chequeparser.wrappers.detection_results import DetectionResults
 from chequeparser.wrappers.model import DetectionModel, RecognitionModel
 from chequeparser.wrappers.recognition_results import RecognitionResults
-
-DET_MODELS = [
-    "db_resnet34",
-    "db_resnet50",
-    "db_mobilenet_v3_large",
-    "linknet_resnet18",
-    "linknet_resnet34",
-    "linknet_resnet50",
-]
-
-REC_MODELS = [
-    "crnn_vgg16_bn",
-    "crnn_mobilenet_v3_small",
-    "crnn_mobilenet_v3_large",
-    "sar_resnet31",
-    "master",
-    "vitstr_small",
-    "vitstr_base",
-    "parseq",
-]
 
 
 class DoctrDetModel(DetectionModel):
@@ -95,19 +75,21 @@ class DoctrRecModel(RecognitionModel):
         return l_results
 
 
-def _load_model_state(path, model):
-    params = torch.load(path)
-    model.load_state_dict(params)
-
-
 def load(
-    model_name: str, path: Optional[str], device: str, model_kwargs: dict, **kwargs
+    task: str,
+    model_name: str,
+    path: Optional[str],
+    device: str,
+    model_kwargs: dict,
+    **kwargs,
 ):
     """Factory method to load model."""
     pretrained = model_kwargs.pop("pretrained", path is None or path == "")
     pretrained_backbone = model_kwargs.pop("pretrained_backbone", True)
+    if path is None:
+        path = "pretrained dir"
 
-    if model_name in DET_MODELS:
+    if task == "det":
         from doctr.models import detection
 
         arch = detection.__dict__[model_name]
@@ -117,9 +99,9 @@ def load(
             **model_kwargs,
         )
         if not pretrained:
-            _load_model_state(path, model)
+            load_state_dict(path, model)
         return DoctrDetModel(model, path, device, **kwargs)
-    elif model_name in REC_MODELS:
+    elif task == "rec":
         from doctr.models import recognition
 
         arch = recognition.__dict__[model_name]
@@ -129,7 +111,7 @@ def load(
             **model_kwargs,
         )
         if not pretrained:
-            _load_model_state(path, model)
+            load_state_dict(path, model)
         return DoctrRecModel(model, path, device, **kwargs)
     else:
-        raise NotImplementedError(f"Model {model_name} is not supported.")
+        raise NotImplementedError(f"Task {task} is not supported.")
