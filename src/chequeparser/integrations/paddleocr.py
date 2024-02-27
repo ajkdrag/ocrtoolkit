@@ -82,6 +82,9 @@ def load(
             raise ValueError(f"No pretrained model for {model_name}.") from e
 
     model_kwargs["use_gpu"] = device != "cpu"
+    model_kwargs["rec_char_dict_path"] = model_kwargs.get(
+        "rec_char_dict_path", EN_DICT_FILE
+    )
     ppocr_parser = utility.init_args()
     all_args = ppocr_parser.parse_args("")
     dict_args = vars(all_args)
@@ -91,6 +94,7 @@ def load(
         from paddleocr.tools.infer import predict_det
 
         dict_args["det_model_dir"] = path
+        logger.info(all_args)
         predictor = predict_det.TextDetector(all_args)
         return PaddleOCRDetModel(predictor, path, device, **kwargs)
 
@@ -98,7 +102,6 @@ def load(
         from paddleocr.tools.infer import predict_rec
 
         dict_args["rec_model_dir"] = path
-        dict_args["rec_char_dict_path"] = EN_DICT_FILE
         logger.info(all_args)
         predictor = predict_rec.TextRecognizer(all_args)
         return PaddleOCRRecModel(predictor, path, device, **kwargs)
