@@ -7,7 +7,7 @@
 #
 
 if [ -z "$1" ]; then
-  echo "usage: $0 chequeparser-YY.MM.MICRO-py3-none-any.whl"
+  echo "usage: $0 ocrtoolkit-YY.MM.MICRO-py3-none-any.whl"
   exit
 fi
 

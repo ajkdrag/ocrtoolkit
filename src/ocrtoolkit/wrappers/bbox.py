@@ -3,7 +3,7 @@ from typing import Union
 
 import numpy as np
 
-from chequeparser.wrappers.recognition_results import RecognitionResults
+from ocrtoolkit.wrappers.recognition_results import RecognitionResults
 
 
 class BBox:

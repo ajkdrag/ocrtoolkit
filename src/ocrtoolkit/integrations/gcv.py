@@ -5,9 +5,9 @@ import numpy as np
 from google.cloud import vision_v1 as vision
 from google.oauth2 import service_account
 
-from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.model import DetectionModel
+from ocrtoolkit.wrappers.bbox import BBox
+from ocrtoolkit.wrappers.detection_results import DetectionResults
+from ocrtoolkit.wrappers.model import DetectionModel
 
 
 class GCVModel(DetectionModel):

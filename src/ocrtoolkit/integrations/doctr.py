@@ -4,11 +4,11 @@ import numpy as np
 from doctr.models.predictor.base import _OCRPredictor
 from doctr.models.preprocessor import PreProcessor
 
-from chequeparser.utilities.model_utils import load_state_dict
-from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.model import DetectionModel, RecognitionModel
-from chequeparser.wrappers.recognition_results import RecognitionResults
+from ocrtoolkit.utilities.model_utils import load_state_dict
+from ocrtoolkit.wrappers.bbox import BBox
+from ocrtoolkit.wrappers.detection_results import DetectionResults
+from ocrtoolkit.wrappers.model import DetectionModel, RecognitionModel
+from ocrtoolkit.wrappers.recognition_results import RecognitionResults
 
 
 class DoctrDetModel(DetectionModel):

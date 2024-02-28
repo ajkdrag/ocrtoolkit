@@ -4,11 +4,11 @@ from typing import List, Tuple
 import yaml
 from loguru import logger
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.datasets.fileds import FileDS
-from chequeparser.utilities.io_utils import get_files
-from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.detection_results import DetectionResults
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.datasets.fileds import FileDS
+from ocrtoolkit.utilities.io_utils import get_files
+from ocrtoolkit.wrappers.bbox import BBox
+from ocrtoolkit.wrappers.detection_results import DetectionResults
 
 
 def _read_image_paths_from_txt_or_dir(paths: List[str], root_path: str):

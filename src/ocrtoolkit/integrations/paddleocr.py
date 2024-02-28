@@ -6,11 +6,11 @@ from loguru import logger
 from paddleocr.tools.infer import utility
 from ppocr import utils as pputils
 
-from chequeparser.utilities.network_utils import download_file
-from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.model import DetectionModel, RecognitionModel
-from chequeparser.wrappers.recognition_results import RecognitionResults
+from ocrtoolkit.utilities.network_utils import download_file
+from ocrtoolkit.wrappers.bbox import BBox
+from ocrtoolkit.wrappers.detection_results import DetectionResults
+from ocrtoolkit.wrappers.model import DetectionModel, RecognitionModel
+from ocrtoolkit.wrappers.recognition_results import RecognitionResults
 
 BASE_URL = "https://paddleocr.bj.bcebos.com"
 DET_MODEL_URLS = {

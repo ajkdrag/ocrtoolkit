@@ -4,9 +4,9 @@ from typing import Any, List
 import numpy as np
 from loguru import logger
 
-from chequeparser.utilities.img_utils import cv2_tfm_to_3ch
-from chequeparser.wrappers.detection_results import DetectionResults
-from chequeparser.wrappers.recognition_results import RecognitionResults
+from ocrtoolkit.utilities.img_utils import cv2_tfm_to_3ch
+from ocrtoolkit.wrappers.detection_results import DetectionResults
+from ocrtoolkit.wrappers.recognition_results import RecognitionResults
 
 
 class BaseModel(metaclass=ABCMeta):

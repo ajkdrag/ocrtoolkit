@@ -1,13 +1,13 @@
 """
-This example script imports the chequeparser package and
+This example script imports the ocrtoolkit package and
 prints out the version.
 """
 
-import chequeparser
+import ocrtoolkit
 
 
 def main():
-    print(f"chequeparser version: {chequeparser.__version__}")
+    print(f"ocrtoolkit version: {ocrtoolkit.__version__}")
 
 
 if __name__ == "__main__":

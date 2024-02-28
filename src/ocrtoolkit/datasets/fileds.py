@@ -4,8 +4,8 @@ from typing import List, Union
 import numpy as np
 from PIL import Image
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.utilities.io_utils import get_files
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.utilities.io_utils import get_files
 
 
 class FileDS(BaseDS):

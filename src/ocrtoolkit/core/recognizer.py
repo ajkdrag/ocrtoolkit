@@ -1,8 +1,8 @@
 import numpy as np
 from loguru import logger
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.wrappers.model import RecognitionModel
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.wrappers.model import RecognitionModel
 
 
 def _recognize(model: RecognitionModel, ds: BaseDS, **kwargs):

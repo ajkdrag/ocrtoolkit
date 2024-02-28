@@ -5,10 +5,10 @@ from setuptools import find_packages, setup
 
 regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 
-base_package = 'chequeparser'
+base_package = 'ocrtoolkit'
 base_path = os.path.dirname(__file__)
 
-init_file = os.path.join(base_path, 'src', 'chequeparser', '__init__.py')
+init_file = os.path.join(base_path, 'src', 'ocrtoolkit', '__init__.py')
 with open(init_file, 'r') as f:
     module_content = f.read()
 
@@ -42,7 +42,7 @@ requirements = parse_requirements('requirements.txt')
 
 if __name__ == '__main__':
     setup(
-        name='chequeparser',
+        name='ocrtoolkit',
         description='Parse bank cheques',
         long_description='\n\n'.join([readme, changes]),
         license='Apache Software License 2.0',
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         maintainer='ajkdrag',
         maintainer_email='',
         install_requires=requirements,
-        keywords=['chequeparser'],
+        keywords=['ocrtoolkit'],
         package_dir={'': 'src'},
         packages=find_packages('src'),
         zip_safe=False,

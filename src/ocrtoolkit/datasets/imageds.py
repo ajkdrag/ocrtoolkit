@@ -3,8 +3,8 @@ from typing import List, Union
 import numpy as np
 from PIL import Image
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.utilities.img_utils import bytes_to_pil, pil_to_bytes, tfm_to_pil
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.utilities.img_utils import bytes_to_pil, pil_to_bytes, tfm_to_pil
 
 
 class ImageDS(BaseDS):

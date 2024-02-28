@@ -7,7 +7,7 @@ from typing import Optional
 from loguru import logger
 from tqdm.auto import tqdm
 
-from chequeparser.utilities.io_utils import extract_files
+from ocrtoolkit.utilities.io_utils import extract_files
 
 
 def retrieve_file(url: str, filename: Path, chunk_size: int = 1024) -> None:

@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from doctr.models.builder import DocumentBuilder
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.datasets.imageds import ImageDS
-from chequeparser.utilities.draw_utils import draw_bbox
-from chequeparser.utilities.misc_utils import get_samples, get_uuid
-from chequeparser.wrappers.bbox import BBox
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.datasets.imageds import ImageDS
+from ocrtoolkit.utilities.draw_utils import draw_bbox
+from ocrtoolkit.utilities.misc_utils import get_samples, get_uuid
+from ocrtoolkit.wrappers.bbox import BBox
 
 
 class DetectionResults:

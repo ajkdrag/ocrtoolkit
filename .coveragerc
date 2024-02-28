@@ -1,12 +1,12 @@
 [run]
 branch = True
 source =
-    chequeparser
+    ocrtoolkit
 
 [paths]
 source =
-    src/chequeparser
-    **/site-packages/chequeparser
+    src/ocrtoolkit
+    **/site-packages/ocrtoolkit
 
 [report]
 exclude_lines =
@@ -21,5 +21,5 @@ exclude_lines =
 ignore_errors = True
 
 [html]
-title = chequeparser Coverage Test Report
+title = ocrtoolkit Coverage Test Report
 directory = docs/source/_static/coverage

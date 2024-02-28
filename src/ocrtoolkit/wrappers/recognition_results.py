@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from chequeparser.datasets.base import BaseDS
-from chequeparser.utilities.draw_utils import draw_ocr_text
+from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.utilities.draw_utils import draw_ocr_text
 
 
 class RecognitionResults:

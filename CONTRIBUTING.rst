@@ -24,7 +24,7 @@ is as follows.
   .. code-block:: console
 
       $ git clone git@github.com:your_name_here/cheque-parser.git
-      $ cd chequeparser
+      $ cd ocrtoolkit
 
 * Create a branch for local development:
 
@@ -48,7 +48,7 @@ is as follows.
 
       $ make venv
       $ source venv/bin/activate
-      (chequeparser) $
+      (ocrtoolkit) $
 
   The 'venv' directory is is created under the project root directory and is
   also listed in the '.gitignore' file so that its contents never accidentally
@@ -56,7 +56,7 @@ is as follows.
 
   .. note::
 
-      (chequeparser) is used to indicate when the commands
+      (ocrtoolkit) is used to indicate when the commands
       should be run within the virtual environment containing the development
       dependencies.
 
@@ -72,7 +72,7 @@ is as follows.
 
     .. code-block:: console
 
-        (chequeparser) $ make test
+        (ocrtoolkit) $ make test
 
     See the :ref:`testing-label` section for more information on testing.
 
@@ -80,7 +80,7 @@ is as follows.
 
     .. code-block:: console
 
-        (chequeparser) $ make coverage
+        (ocrtoolkit) $ make coverage
 
     Review the output produced in ``docs/source/_static/coverage/coverage.html``.
     Add additional test steps, where practical, to improve coverage.
@@ -89,7 +89,7 @@ is as follows.
 
     .. code-block:: console
 
-        (chequeparser) $ make check-style
+        (ocrtoolkit) $ make check-style
 
     Run 'make style' to automatically apply style fixes if needed. See the
     :ref:`style-compliance-label` section for more information.
@@ -99,7 +99,7 @@ is as follows.
 
     .. code-block:: console
 
-        (chequeparser) $ make check-static-analysis
+        (ocrtoolkit) $ make check-static-analysis
 
     See the :ref:`static-analysis-label` section for more information.
 
@@ -110,7 +110,7 @@ is as follows.
 
     .. code-block:: console
 
-        (chequeparser) $ make docs
+        (ocrtoolkit) $ make docs
 
   See the :ref:`documentation-label` section for more information.
 

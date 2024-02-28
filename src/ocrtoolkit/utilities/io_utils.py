@@ -6,7 +6,7 @@ from loguru import logger
 from PIL import Image
 from tqdm.autonotebook import tqdm
 
-from chequeparser.utilities.misc_utils import filter_list
+from ocrtoolkit.utilities.misc_utils import filter_list
 
 
 def extract_files(tar_path: str, tar_file_name_list: list, output_dir: str):

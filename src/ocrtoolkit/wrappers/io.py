@@ -4,8 +4,8 @@ from pathlib import Path
 import h5py
 from loguru import logger
 
-from chequeparser.wrappers.bbox import BBox
-from chequeparser.wrappers.detection_results import DetectionResults
+from ocrtoolkit.wrappers.bbox import BBox
+from ocrtoolkit.wrappers.detection_results import DetectionResults
 
 
 def save_dets(l_dets, path: str):

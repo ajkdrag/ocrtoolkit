@@ -8,14 +8,14 @@ import numpy as np
 from loguru import logger
 from sklearn.model_selection import train_test_split
 
-from chequeparser.utilities.img_utils import (
+from ocrtoolkit.utilities.img_utils import (
     apply_ops,
     tfm_to_3ch,
     tfm_to_gray,
     tfm_to_pil,
     tfm_to_size,
 )
-from chequeparser.utilities.misc_utils import get_samples
+from ocrtoolkit.utilities.misc_utils import get_samples
 
 
 class BaseDS:

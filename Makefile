@@ -19,7 +19,7 @@ help:
 .PHONY: venv
 venv:
 	@rm -Rf venv
-	@python3 -m venv venv --prompt chequeparser
+	@python3 -m venv venv --prompt ocrtoolkit
 	@/bin/bash -c "source venv/bin/activate && pip install pip --upgrade && pip install -r requirements.dev.txt && pip install -e ."
 	@echo "Enter virtual environment using:\n\n\t$ source venv/bin/activate\n"
 
@@ -60,13 +60,13 @@ coverage:
 # help: format                         - perform code style format
 .PHONY: format
 format:
-	@black src/chequeparser tests examples
+	@black src/ocrtoolkit tests examples
 
 
 # help: check-format                   - check code format compliance
 .PHONY: check-format
 check-format:
-	@black --check src/chequeparser tests examples
+	@black --check src/ocrtoolkit tests examples
 
 
 # help: sort-imports                   - apply import sort ordering
@@ -94,13 +94,13 @@ check-style: check-sort-imports check-format
 # help: check-types                    - check type hint annotations
 .PHONY: check-types
 check-types:
-	@cd src; mypy -p chequeparser --ignore-missing-imports
+	@cd src; mypy -p ocrtoolkit --ignore-missing-imports
 
 
 # help: check-lint                     - run static analysis checks
 .PHONY: check-lint
 check-lint:
-	@pylint --rcfile=.pylintrc chequeparser ./tests setup.py ./examples
+	@pylint --rcfile=.pylintrc ocrtoolkit ./tests setup.py ./examples
 
 
 # help: check-static-analysis          - check code style compliance
@@ -111,7 +111,7 @@ check-static-analysis: check-lint check-types
 # help: docs                           - generate project documentation
 .PHONY: docs
 docs: coverage
-	@cd docs; rm -rf source/api/chequeparser*.rst source/api/modules.rst build/*
+	@cd docs; rm -rf source/api/ocrtoolkit*.rst source/api/modules.rst build/*
 	@cd docs; make html
 
 
@@ -136,13 +136,13 @@ dist:
 # help: dist-test                      - test a whell distribution package
 .PHONY: dist-test
 dist-test: dist
-	@cd dist && ../tests/test-dist.bash ./chequeparser-*-py3-none-any.whl
+	@cd dist && ../tests/test-dist.bash ./ocrtoolkit-*-py3-none-any.whl
 
 
 # help: dist-upload                    - upload a wheel distribution package
 .PHONY: dist-upload
 dist-upload:
-	@twine upload dist/chequeparser-*-py3-none-any.whl
+	@twine upload dist/ocrtoolkit-*-py3-none-any.whl
 
 
 # Keep these lines at the end of the file to retain nice help
