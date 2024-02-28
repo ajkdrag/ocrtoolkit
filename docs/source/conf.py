@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'ChequeParser'
+project = 'ocrtoolkit'
 copyright = '2024, ajkdrag'
 author = 'ajkdrag'
 

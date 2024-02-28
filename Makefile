@@ -7,7 +7,7 @@ MAKEFLAGS += --no-print-directory
 # Do not remove this block. It is used by the 'help' rule when
 # constructing the help output.
 # help:
-# help: ChequeParser Makefile help
+# help: ocrtoolkit Makefile help
 # help:
 
 # help: help                           - display this makefile's help information

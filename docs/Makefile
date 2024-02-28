@@ -3,7 +3,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = ChequeParser
+SPHINXPROJ    = ocrtoolkit
 SOURCEDIR     = source
 BUILDDIR      = build
 

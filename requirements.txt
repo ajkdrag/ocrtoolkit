@@ -4,9 +4,4 @@ opencv-python
 matplotlib
 tqdm
 loguru
-ultralytics
-python-doctr[torch]
-symspellpy
 h5py
-paddleocr==2.7.0.3
-paddlepaddle-gpu==2.6.0

@@ -1,4 +1,4 @@
-ChequeParser
+ocrtoolkit
 ############
 
 Parse bank cheques
@@ -16,13 +16,13 @@ Parse bank cheques
 Quick Start
 ===========
 
-ChequeParser is available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
+ocrtoolkit is available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
 
 .. code-block:: console
 
     $ pip install ocrtoolkit
 
-After installing ChequeParser you can use it like any other Python module.
+After installing ocrtoolkit you can use it like any other Python module.
 
 Here is a simple example:
 

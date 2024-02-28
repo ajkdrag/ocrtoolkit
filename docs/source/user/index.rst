@@ -20,7 +20,7 @@ Install Guide
         $ source venv/bin/activate
         (myvenv) $
 
-The simplest way to install ChequeParser is using Pip.
+The simplest way to install ocrtoolkit is using Pip.
 
 .. code-block:: console
 
@@ -45,7 +45,7 @@ The `API Reference <http://ocrtoolkit.readthedocs.io>`_ provides API-level docum
 Report Bugs
 ===========
 
-Report bugs at the `issue tracker <https://github.com/ajkdrag/cheque-parser/issues>`_.
+Report bugs at the `issue tracker <https://github.com/ajkdrag/ocrtoolkit/issues>`_.
 
 Please include:
 

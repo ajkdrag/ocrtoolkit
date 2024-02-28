@@ -17,13 +17,13 @@ rejected.
 The workflow that developers typically use to fix a bug or add enhancements
 is as follows.
 
-* Fork the ``cheque-parser`` repo into your account.
+* Fork the ``ocrtoolkit`` repo into your account.
 
 * Obtain the source by cloning it onto your development machine.
 
   .. code-block:: console
 
-      $ git clone git@github.com:your_name_here/cheque-parser.git
+      $ git clone git@github.com:your_name_here/ocrtoolkit.git
       $ cd ocrtoolkit
 
 * Create a branch for local development:

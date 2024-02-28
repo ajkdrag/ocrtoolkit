@@ -9,12 +9,12 @@ Developers Guide
 Testing
 =======
 
-The ChequeParser project implements a regression
+The ocrtoolkit project implements a regression
 test suite that improves developer productivity by identifying capability
 regressions early.
 
 Developers implementing fixes or enhancements must ensure that they have
-not broken existing functionality. The ChequeParser
+not broken existing functionality. The ocrtoolkit
 project provides some convenience tools so this testing step can be quickly
 performed.
 
