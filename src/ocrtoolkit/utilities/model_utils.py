@@ -1,8 +1,7 @@
-import torch
+def load_state_dict(path, model, ignore_keys: list = None):
+    import torch
 
-
-def load_state_dict(path: str, model: torch.nn.Module, ignore_keys: list = None):
-    state_dict = torch.load(archive_path, map_location="cpu")
+    state_dict = torch.load(path, map_location="cpu")
     if ignore_keys is not None and len(ignore_keys) > 0:
         for key in ignore_keys:
             state_dict.pop(key)

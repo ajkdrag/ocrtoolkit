@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-FONT_PATH = Path(__file__).parent.parent / "assets/Ubuntu-R.ttf"
+FONT_PATH = Path(__file__).parent.parent.joinpath("assets/Ubuntu-R.ttf")
 
 
 def draw_bbox(

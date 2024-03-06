@@ -1,0 +1,10 @@
+# FORMAT
+# Put your extra requirements here in the following format
+#
+# package[version_required]: tag1, tag2, ...
+
+ultralytics==8.1.11:        ultralytics
+dill==0.3.8:                ultralytics
+paddleocr==2.7.0.3:         paddle
+paddlepaddle-gpu==2.6.0:    paddle
+python-doctr[torch]==0.8.1: doctr

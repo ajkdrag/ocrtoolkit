@@ -4,3 +4,6 @@ from .img_utils import *
 from .io_utils import *
 from .misc_utils import *
 from .network_utils import *
+from .geometry_utils import *
+from .det_utils import *
+from .model_utils import *

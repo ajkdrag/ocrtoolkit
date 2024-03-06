@@ -5,3 +5,4 @@ matplotlib
 tqdm
 loguru
 h5py
+scikit-learn

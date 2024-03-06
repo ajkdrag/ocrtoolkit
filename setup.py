@@ -3,6 +3,30 @@ import re
 
 from setuptools import find_packages, setup
 
+
+def get_extra_requires(path, add_all=True):
+    import re
+    from collections import defaultdict
+
+    with open(path) as fp:
+        extra_deps = defaultdict(set)
+        for k in fp:
+            if k.strip() and not k.startswith("#"):
+                tags = set()
+                if ":" in k:
+                    k, v = k.split(":")
+                    tags.update(vv.strip() for vv in v.split(","))
+                tags.add(re.split("[<=>]", k)[0])
+                for t in tags:
+                    extra_deps[t].add(k)
+
+        # add tag `all` at the end
+        if add_all:
+            extra_deps["all"] = set(vv for v in extra_deps.values() for vv in v)
+
+    return extra_deps
+
+
 regexp = re.compile(r".*__version__ = [\'\"](.*?)[\'\"]", re.S)
 
 base_package = "ocrtoolkit"
@@ -53,17 +77,7 @@ if __name__ == "__main__":
         maintainer_email="",
         python_requires="==3.8.*",
         install_requires=requirements,
-        extras_require={
-            "ultralytics": ["ultralytics==8.1.11"],
-            "paddle": ["paddleocr==2.7.0.3", "paddlepaddle-gpu==2.6.0"],
-            "doctr": ["python-doctr[torch]==0.7.0"],
-            "all": [
-                "ultralytics==8.1.11",
-                "python-doctr[torch]==0.7.0",
-                "paddleocr==2.7.0.3",
-                "paddlepaddle-gpu==2.6.0",
-            ],
-        },
+        extras_require=get_extra_requires("extra-requirements.txt"),
         keywords=["ocrtoolkit"],
         package_dir={"": "src"},
         packages=find_packages("src"),
