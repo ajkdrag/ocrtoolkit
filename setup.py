@@ -75,7 +75,6 @@ if __name__ == "__main__":
         author_email="",
         maintainer="ajkdrag",
         maintainer_email="",
-        python_requires="==3.8.*",
         install_requires=requirements,
         extras_require=get_extra_requires("extra-requirements.txt"),
         keywords=["ocrtoolkit"],
@@ -85,8 +84,7 @@ if __name__ == "__main__":
         classifiers=[
             "Development Status :: 3 - Alpha",
             "Intended Audience :: Developers",
-            "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
         ],
     )

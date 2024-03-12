@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Optional, Tuple
+
+import numpy as np
 
 
 def estimate_page_angle(polys: np.ndarray) -> float:

@@ -25,13 +25,8 @@ def compare_dataframes(
 
     Returns:
         pd.DataFrame: DataFrame containing comparison results as percentage of matches.
+        pd.DataFrame: The merged dataframes used for comparison.
     """
-    # Check if indices are named and assign names if not
-    if df_a.index.name is None:
-        df_a.index.name = index_a
-    if df_b.index.name is None:
-        df_b.index.name = index_b
-
     # Set indices if they are not already set
     if index_a != df_a.index.name:
         df_a = df_a.set_index(index_a)
@@ -56,4 +51,7 @@ def compare_dataframes(
         matches = (comparison_results[col_a] == comparison_results[col_b]).mean() * 100
         match_percentages[col_a[:-2]] = f"{matches:.2f}%"
 
-    return pd.DataFrame(match_percentages, index=["Match Percentage"])
+    return (
+        pd.DataFrame(match_percentages, index=["Match Percentage"]),
+        comparison_results,
+    )

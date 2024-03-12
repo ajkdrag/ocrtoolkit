@@ -5,9 +5,9 @@ import numpy as np
 
 from ocrtoolkit.datasets.base import BaseDS
 from ocrtoolkit.datasets.imageds import ImageDS
+from ocrtoolkit.utilities.box_utils import resolve_lines
 from ocrtoolkit.utilities.draw_utils import draw_bbox
 from ocrtoolkit.utilities.misc_utils import get_samples, get_uuid
-from ocrtoolkit.utilities.det_utils import resolve_lines
 from ocrtoolkit.wrappers.bbox import BBox
 
 

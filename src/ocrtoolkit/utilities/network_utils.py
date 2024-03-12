@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from loguru import logger
-from tqdm.auto import tqdm
+from tqdm.autonotebook import tqdm
 
 from ocrtoolkit.utilities.io_utils import extract_files
 
