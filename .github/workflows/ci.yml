@@ -58,6 +58,19 @@ jobs:
     - name: Generate docs
       run: |
         make docs 
+    - name: Generate docs
+      run: |
+        make docs
+    - name: Generate package
+      if: github.event_name == 'release'
+      run: |
+        make dist
+    - name: Upload distribution package
+      if: github.event_name == 'release'
+      uses: actions/upload-artifact@master
+      with:
+        name: dist
+        path: dist
   pypi-publish:
     runs-on: ubuntu-latest
     needs: build
@@ -65,8 +78,10 @@ jobs:
       id-token: write
     if: github.event_name == 'release'
     steps:
-    - name: Generate package
-      run: |
-        make dist
+    - name: Download distribution package
+      uses: actions/download-artifact@master
+      with:
+        name: dist
+        path: dist
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
