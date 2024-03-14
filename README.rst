@@ -1,4 +1,12 @@
-|image1| |image2|
+|docs_badge| |pypi_badge|
+
+.. |docs_badge| image:: https://img.shields.io/github/deployments/ajkdrag/ocrtoolkit/github-pages?label=docs
+   :alt: GitHub-Pages deployment status
+   :target: https://ajkdrag.github.io/ocrtoolkit/ocrtoolkit/
+
+.. |pypi_badge| image:: https://img.shields.io/pypi/v/ocrtoolkit?style=flat&color=green
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/ocrtoolkit/
 
 ocrtoolkit
 ############
@@ -42,9 +50,4 @@ Here is a simple example:
 The `API Reference <https://ajkdrag.github.io/ocrtoolkit/>`_ provides API-level documentation.
 
 
-.. |image1| image:: https://img.shields.io/github/actions/workflow/status/ajkdrag/ocrtoolkit/ci.yml?branch=master&style=flat
-   :alt: GitHub Actions Workflow Status
-
-.. |image2| image:: https://img.shields.io/pypi/v/ocrtoolkit?style=flat&color=green
-   :alt: PyPI - Version
 
