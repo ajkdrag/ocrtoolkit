@@ -1,3 +1,7 @@
+.. image:: https://img.shields.io/github/actions/workflow/status/ajkdrag/ocrtoolkit/ci.yml?branch=master&style=flat
+   :alt: GitHub Actions Workflow Status
+
+
 ocrtoolkit
 ############
 
