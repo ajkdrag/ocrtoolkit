@@ -19,9 +19,6 @@ from ocrtoolkit.wrappers.model import DetectionModel
 class GCVModel(DetectionModel):
     """GCVModel."""
 
-    svc_acc_path: str
-    client: vision.ImageAnnotatorClient
-
     def __init__(self, client, path):
         super().__init__(model=client, path=path)
 
