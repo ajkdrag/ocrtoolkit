@@ -62,7 +62,10 @@ class BBox:
         """Set the text and confidence of the bounding box ocr result.
 
         Args:
-            text_and_conf (Union[tuple, "RecognitionResults"]): OCR text and confidence.
+            * `text_and_conf`: OCR text and confidence.
+
+        Returns:
+            * `None`
         """
         if isinstance(text_and_conf, tuple):
             self.text, self.text_conf = text_and_conf
@@ -76,18 +79,17 @@ class BBox:
         """Create a BBox from x, y, w, h coordinates.
 
         Args:
-            x: x coordinate.
-            y: y coordinate.
-            w: Width of the box.
-            h: Height of the box.
-            normalized: Whether the coordinates are normalized.
-            conf: Confidence of the box.
-            label: Label of the box.
-            text: OCR text of the box.
-            text_conf: OCR text confidence of the box.
-
+            * `x`: x coordinate.
+            * `y`: y coordinate.
+            * `w`: Width of the box.
+            * `h`: Height of the box.
+            * `normalized`: Whether the coordinates are normalized.
+            * `conf`: Confidence of the box.
+            * `label`: Label of the box.
+            * `text`: OCR text of the box.
+            * `text_conf`: OCR text confidence of the box.
         Returns:
-            BBox: A BBox object.
+            * `BBox`: A BBox object.
         """
         return cls(x, y, x + w, y + h, normalized, conf, label, text, text_conf)
 
@@ -98,19 +100,20 @@ class BBox:
         """Create a BBox from cx, cy, w, h coordinates.
 
         Args:
-            cx: Center x coordinate.
-            cy: Center y coordinate.
-            w: Width of the box.
-            h: Height of the box.
-            normalized: Whether the coordinates are normalized.
-            conf: Confidence of the box.
-            label: Label of the box.
-            text: OCR text of the box.
-            text_conf: OCR text confidence of the box.
+            * `cx`: Center x coordinate.
+            * `cy`: Center y coordinate.
+            * `w`: Width of the box.
+            * `h`: Height of the box.
+            * `normalized`: Whether the coordinates are normalized.
+            * `conf`: Confidence of the box.
+            * `label`: Label of the box.
+            * `text`: OCR text of the box.
+            * `text_conf`: OCR text confidence of the box.
 
         Returns:
-            BBox: A BBox object.
+            * `BBox`: A BBox object.
         """
+
         return cls(
             cx - w / 2,
             cy - h / 2,
@@ -127,11 +130,11 @@ class BBox:
         """Denormalize the bounding box according to the width and height of the image.
 
         Args:
-            width: Width of the image.
-            height: Height of the image.
+            * `width`: Width of the image.
+            * `height`: Height of the image.
 
         Returns:
-            BBox: A denormalized BBox object.
+            * `BBox`: A denormalized BBox object.
         """
         if not self.normalized:
             return self
@@ -151,11 +154,11 @@ class BBox:
         """Normalize the bounding box according to the width and height of the image.
 
         Args:
-            width: Width of the image.
-            height: Height of the image.
+            * `width`: Width of the image.
+            * `height`: Height of the image.
 
         Returns:
-            BBox: A normalized BBox object.
+            * `BBox`: A normalized BBox object.
         """
         if self.normalized:
             return self
@@ -175,13 +178,13 @@ class BBox:
         """Expand the bounding box by up, down, left, right.
 
         Args:
-            up: Amount to expand up.
-            down: Amount to expand down.
-            left: Amount to expand left.
-            right: Amount to expand right.
+            * `up`: Amount to expand up.
+            * `down`: Amount to expand down.
+            * `left`: Amount to expand left.
+            * `right`: Amount to expand right.
 
         Returns:
-            BBox: A expanded BBox object.
+            * `BBox`: A new expanded BBox object.
         """
         return self.__class__(
             self.x1 - left,
@@ -201,10 +204,10 @@ class BBox:
         Assumes same normalization states for both boxes
 
         Args:
-            other: Other BBox.
+            * `other`: Other BBox.
 
         Returns:
-            float: Area of intersection.
+            * `float`: Area of intersection
         """
         assert self.normalized == other.normalized, "Normalization is different"
         x1 = max(self.x1, other.x1)
@@ -222,11 +225,11 @@ class BBox:
         Normalization states for both boxes should be same.
 
         Args:
-            other: Other BBox.
-            thresh: Threshold for IA / A.
+            * `other`: Other BBox.
+            * `thresh`: Threshold for the IA / A ratio.
 
         Returns:
-            bool: True if this BBox is inside the other BBox with the given threshold.
+            * `bool`: True if this BBox is inside the other BBox
         """
         assert self.normalized == other.normalized, "Normalization is different"
         IA = self.intersection_area(other)
@@ -237,11 +240,11 @@ class BBox:
         """Return the l-p distance between two bboxes
 
         Args:
-            other: Other BBox.
-            p: The order of the distance. E.g. p=2 for Euclidean distance.
+            * `other`: Other BBox.
+            * `p`: The order of the distance. E.g. p=2 for Euclidean distance
 
         Returns:
-            float: The l-p distance.
+            * `float`: The l-p distance
         """
         assert p > 0, "p should be > 0"
         assert self.normalized == other.normalized, "Normalization is different"
@@ -251,11 +254,11 @@ class BBox:
         """Apply an operation to the text of the BBox.
 
         Args:
-            op: Operation to apply to the text.
-            lowercase: Whether to lowercase the text.
+            * `op`: The operation to apply.
+            * `lowercase`: Whether to lowercase the text.
 
         Returns:
-            BBox: A new BBox object with the operation applied to the text.
+            * `BBox`: A new BBox object.
         """
         new_text = self.text.lower() if lowercase else self.text
         new_text = op(new_text)
@@ -275,10 +278,9 @@ class BBox:
         """Return a numpy array with all the values of the BBox
 
         Args:
-            encode: Whether to encode the text using UTF-8.
-
+            * `encode`: Whether to encode the text as bytes.
         Returns:
-            numpy.ndarray: A numpy array with all the values of the BBox.
+            * _np.ndarray_: A numpy array.
         """
         np_arr = np.array(
             [
@@ -302,11 +304,10 @@ class BBox:
         """Return a BBox from a numpy array. Casting is done explicitly.
 
         Args:
-            arr: A numpy array.
+            * `arr`: A numpy array.
 
         Returns:
-            BBox: A BBox object.
-
+            * `BBox`: A BBox object.
         """
         arr = np.char.decode(arr.astype(np.bytes_), "UTF-8")
         x1, y1, x2, y2 = map(float, arr[:4])
@@ -331,7 +332,7 @@ class BBox:
         """Return the bbox as a dictionary.
 
         Returns:
-            dict: A dictionary representation of the BBox.
+            * `dict`: A dictionary with all the values of the BBox.
         """
         return {
             "x1": self.x1,
@@ -353,10 +354,10 @@ class BBox:
         New box's conf is the max of the confs of the two boxes.
 
         Args:
-            other: Other BBox.
+            * `other`: Another BBox.
 
         Returns:
-            BBox: A new BBox with the union of self and other.
+            * `BBox`: A new BBox with the union of self and other.
         """
         if isinstance(other, self.__class__):
             assert self.normalized == other.normalized, "Normalization is different"
@@ -381,7 +382,7 @@ class BBox:
         """Return a string representation of the BBox.
 
         Returns:
-            str: A string representation of the BBox.
+            * `str`: A string representation of the BBox.
         """
         return str(self.to_dict())
 
