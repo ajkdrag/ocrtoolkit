@@ -2,8 +2,14 @@ from typing import List, Optional
 
 import cv2
 import numpy as np
-from google.cloud import vision_v1 as vision
-from google.oauth2 import service_account
+from loguru import logger
+
+try:
+    from google.cloud import vision_v1 as vision
+    from google.oauth2 import service_account
+except ImportError:
+    logger.warning("Google Cloud Vision API is not installed.")
+    pass
 
 from ocrtoolkit.wrappers.bbox import BBox
 from ocrtoolkit.wrappers.detection_results import DetectionResults
@@ -11,6 +17,8 @@ from ocrtoolkit.wrappers.model import DetectionModel
 
 
 class GCVModel(DetectionModel):
+    """GCVModel."""
+
     svc_acc_path: str
     client: vision.ImageAnnotatorClient
 

@@ -1,8 +1,7 @@
 from typing import List, Optional
 
 import numpy as np
-from doctr.models.predictor.base import _OCRPredictor
-from doctr.models.preprocessor import PreProcessor
+from loguru import logger
 
 from ocrtoolkit.utilities.model_utils import load_state_dict
 from ocrtoolkit.wrappers.bbox import BBox
@@ -10,8 +9,15 @@ from ocrtoolkit.wrappers.detection_results import DetectionResults
 from ocrtoolkit.wrappers.model import DetectionModel, RecognitionModel
 from ocrtoolkit.wrappers.recognition_results import RecognitionResults
 
+try:
+    from doctr.models.predictor.base import _OCRPredictor
+    from doctr.models.preprocessor import PreProcessor
+except ImportError:
+    logger.warning("Doctr is not installed.")
+
 
 class DoctrDetModel(DetectionModel):
+
     def __init__(self, model, path, device, **kwargs):
         from doctr.models.detection.predictor import DetectionPredictor
 
