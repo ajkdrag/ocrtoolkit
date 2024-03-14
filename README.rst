@@ -15,10 +15,10 @@ Versatile Python package for seamlessly integrating and experimenting with vario
 
 Supports:
 
-- DocTR
-- PaddleOCR
-- Ultralytics
-- Google Cloud Vision
+- `DocTR <https://github.com/mindee/doctr/tree/main>`_
+- `PaddleOCR <https://github.com/PaddlePaddle/PaddleOCR>`_
+- `Ultralytics <https://github.com/ultralytics/ultralytics>`_
+- `Google Cloud Vision <https://cloud.google.com/python/docs/reference/vision/latest>`_
 
 
 Quickstart
