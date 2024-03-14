@@ -1,6 +1,9 @@
 .. image:: https://img.shields.io/github/actions/workflow/status/ajkdrag/ocrtoolkit/ci.yml?branch=master&style=flat
    :alt: GitHub Actions Workflow Status
 
+.. image:: https://img.shields.io/pypi/v/ocrtoolkit?style=flat&color=green
+   :alt: PyPI - Version
+
 
 ocrtoolkit
 ############
