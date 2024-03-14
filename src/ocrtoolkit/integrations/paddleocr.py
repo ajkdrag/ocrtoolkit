@@ -3,8 +3,16 @@ from typing import List, Optional
 import importlib_resources
 import numpy as np
 from loguru import logger
-from paddleocr.tools.infer import utility
-from ppocr import utils as pputils
+
+try:
+    from paddleocr.tools.infer import utility
+    from ppocr import utils as pputils
+
+    EN_DICT_FILE = importlib_resources.files(pputils).joinpath("en_dict.txt").as_posix()
+except ImportError:
+    EN_DICT_FILE = None
+    logger.warning("PaddleOCR not installed")
+
 
 from ocrtoolkit.utilities.network_utils import download_file
 from ocrtoolkit.wrappers.bbox import BBox
@@ -17,7 +25,6 @@ DET_MODEL_URLS = {
     "DB": f"{BASE_URL}/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar",
     "SVTR_LCNet": f"{BASE_URL}/PP-OCRv4/english/en_PP-OCRv4_rec_infer.tar",
 }
-EN_DICT_FILE = importlib_resources.files(pputils).joinpath("en_dict.txt").as_posix()
 
 
 class PaddleOCRDetModel(DetectionModel):
