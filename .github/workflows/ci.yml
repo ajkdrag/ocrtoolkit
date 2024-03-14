@@ -5,7 +5,7 @@ on:
     types: [published]
   push:
     branches: [ master ]
-    paths-ignore: [ '**.md' ]
+    paths-ignore: [ '**.rst' ]
   pull_request:
     branches: [ master ]
 

@@ -7,7 +7,7 @@ Parse bank cheques
 Quickstart
 ==========
 
-ocrtoolkit is available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
+ocrtoolkit is available on PyPI and can be installed with `pip <https://pypi.org/project/ocrtoolkit/>`_.
 
 .. code-block:: console
 
@@ -19,7 +19,15 @@ Here is a simple example:
 
 .. code-block:: python
 
-    import ocrtoolkit
-    # Fill this section in with the common use-case.
+    from ocrtoolkit.models import UL_YOLOV8
+    from ocrtoolkit.datasets import FileDS
+    from ocrtoolkit.core import detect
+
+    ds = FileDS("some_images_dir")
+    mini_ds = ds.sample()
+    model = UL_YOLOV8()
+
+    l_results = detect(model, mini_ds, stream=False):
+    
 
 The `API Reference <http://ocrtoolkit.readthedocs.io>`_ provides API-level documentation.
