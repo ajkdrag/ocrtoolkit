@@ -1,8 +1,13 @@
 ocrtoolkit
 ############
 
-Parse bank cheques
+Versatile Python package for seamlessly integrating and experimenting with various OCR and Object Detection frameworks.
 
+Supports:
+* DocTR
+* Ultralytics
+* PaddleOCR
+* Google Cloud Vision
 
 Quickstart
 ==========
