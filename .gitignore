@@ -63,7 +63,7 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
+# documentation
 docs/_build/
 docs/build/
 docs/source/api/
@@ -113,3 +113,6 @@ data/
 pretrained/
 resources/
 temp/
+
+# pdoc documentation
+docs/ocrtoolkit
