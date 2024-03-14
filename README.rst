@@ -4,10 +4,12 @@ ocrtoolkit
 Versatile Python package for seamlessly integrating and experimenting with various OCR and Object Detection frameworks.
 
 Supports:
-* DocTR
-* Ultralytics
-* PaddleOCR
-* Google Cloud Vision
+
+- DocTR
+- PaddleOCR
+- Ultralytics
+- Google Cloud Vision
+
 
 Quickstart
 ==========
@@ -35,4 +37,4 @@ Here is a simple example:
     l_results = detect(model, mini_ds, stream=False):
     
 
-The `API Reference <http://ocrtoolkit.readthedocs.io>`_ provides API-level documentation.
+The `API Reference <https://ajkdrag.github.io/ocrtoolkit/>`_ provides API-level documentation.
