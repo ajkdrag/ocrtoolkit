@@ -84,7 +84,7 @@ jobs:
       id: deployment
       uses: actions/deploy-pages@v4
       with:
-        name: docs
+        artifact_name: docs
 
   pypi-publish:
     runs-on: ubuntu-latest
