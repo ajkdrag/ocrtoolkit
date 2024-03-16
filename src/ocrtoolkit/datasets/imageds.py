@@ -22,6 +22,8 @@ class ImageDS(BaseDS):
             self.items = [self.source]
         else:
             self.items = self.source
+        # make source point to None to allow saving
+        self.source = None
 
     def _setup_names(self):
         self.names = [f"Image: {i}" for i in range(len(self.items))]
