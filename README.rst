@@ -8,23 +8,27 @@
    :alt: PyPI - Version
    :target: https://pypi.org/project/ocrtoolkit/
 
+
 ocrtoolkit
 ############
 
 Versatile Python package for seamlessly integrating and experimenting with various OCR and Object Detection frameworks.
 
-Supports:
+
+.. contents::
+   :local:
+
+Quickstart
+==========
+
+ocrtoolkit is available on PyPI and can be installed with `pip <https://pypi.org/project/ocrtoolkit/>`_.
+Supports integrations with:
 
 - `DocTR <https://github.com/mindee/doctr/tree/main>`_
 - `PaddleOCR <https://github.com/PaddlePaddle/PaddleOCR>`_
 - `Ultralytics <https://github.com/ultralytics/ultralytics>`_
 - `Google Cloud Vision <https://cloud.google.com/python/docs/reference/vision/latest>`_
 
-
-Quickstart
-==========
-
-ocrtoolkit is available on PyPI and can be installed with `pip <https://pypi.org/project/ocrtoolkit/>`_.
 
 .. code-block:: console
 
@@ -44,10 +48,17 @@ Here is a simple example:
     mini_ds = ds.sample()
     model = UL_YOLOV8()
 
-    l_results = detect(model, mini_ds, stream=False):
+    l_results = detect(model, mini_ds, stream=False)
     
 
-The `API Reference <https://ajkdrag.github.io/ocrtoolkit/>`_ provides API-level documentation.
+Documentation
+==============
 
+The `API Reference <https://ajkdrag.github.io/ocrtoolkit/>`_ provides API-level documentation
 
+Notebooks
+==========
+Refer `notebooks <https://github.com/ajkdrag/ocrtoolkit/tree/master/notebooks>`_ for examples on how to use the modules.
+
+.. include:: CHANGELOG.rst
 
