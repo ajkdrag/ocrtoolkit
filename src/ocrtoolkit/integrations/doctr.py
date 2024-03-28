@@ -17,7 +17,6 @@ except ImportError:
 
 
 class DoctrDetModel(DetectionModel):
-
     def __init__(self, model, path, device, **kwargs):
         from doctr.models.detection.predictor import DetectionPredictor
 
@@ -30,7 +29,10 @@ class DoctrDetModel(DetectionModel):
         self.predictor = DetectionPredictor(PreProcessor(input_shape, **kwargs), model)
 
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[DetectionResults]:
-        l_preds = self.predictor(images, **kwargs)
+        import torch
+
+        with torch.inference_mode():
+            l_preds = self.predictor(images, **kwargs)
         l_loc_preds = [list(loc_pred.values())[0] for loc_pred in l_preds]
         l_loc_preds = self.doctr_base_predictor._remove_padding(images, l_loc_preds)
 
@@ -69,7 +71,10 @@ class DoctrRecModel(RecognitionModel):
         )
 
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[RecognitionResults]:
-        l_preds = self.predictor(images, **kwargs)
+        import torch
+
+        with torch.inference_mode():
+            l_preds = self.predictor(images, **kwargs)
         l_results = []
         for image, preds in zip(images, l_preds):
             text, conf = preds

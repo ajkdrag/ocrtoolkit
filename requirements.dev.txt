@@ -8,6 +8,7 @@ sphinx
 twine
 wheel
 pdoc3
+ruff
 
 # for notebooks
 ipykernel

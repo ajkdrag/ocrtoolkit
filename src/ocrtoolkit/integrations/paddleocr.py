@@ -29,9 +29,13 @@ DET_MODEL_URLS = {
 
 class PaddleOCRDetModel(DetectionModel):
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[DetectionResults]:
+        import torch
+
         l_results = []
+
         for image in images:
-            preds, _ = self.model(image, **kwargs)
+            with torch.inference_mode():
+                preds, _ = self.model(image, **kwargs)
             logger.info(preds.shape)
             l_bboxes = self.get_bounding_boxes(preds)
             l_results.append(
@@ -59,7 +63,10 @@ class PaddleOCRDetModel(DetectionModel):
 
 class PaddleOCRRecModel(RecognitionModel):
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[RecognitionResults]:
-        l_preds, _ = self.model(images, **kwargs)
+        import torch
+
+        with torch.inference_mode():
+            l_preds, _ = self.model(images, **kwargs)
         l_results = []
         for image, preds in zip(images, l_preds):
             text, conf = preds
@@ -79,7 +86,6 @@ def load(
     model_kwargs: dict,
     **kwargs,
 ):
-
     if path is None:
         try:
             path = download_file(
