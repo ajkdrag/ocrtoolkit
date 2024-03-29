@@ -3,7 +3,7 @@ from typing import List, Optional
 import numpy as np
 from loguru import logger
 
-from ocrtoolkit.utilities.model_utils import load_state_dict
+from ocrtoolkit.utilities.model_utils import load_state_dict, reparameterize
 from ocrtoolkit.wrappers.bbox import BBox
 from ocrtoolkit.wrappers.detection_results import DetectionResults
 from ocrtoolkit.wrappers.model import DetectionModel, RecognitionModel
@@ -58,7 +58,6 @@ class DoctrRecModel(RecognitionModel):
         from doctr.models.recognition.predictor import RecognitionPredictor
 
         super().__init__(model, path, device)
-        kwargs.pop("pretrained_backbone", None)
         kwargs.pop("vocab", None)
         kwargs.pop("max_length", None)
 
@@ -111,6 +110,10 @@ def load(
         )
         if not pretrained:
             load_state_dict(path, model)
+
+        if model_name.startswith("fast_"):
+            model = reparameterize(model)
+
         return DoctrDetModel(model, path, device, **kwargs)
     elif task == "rec":
         from doctr.models import recognition
