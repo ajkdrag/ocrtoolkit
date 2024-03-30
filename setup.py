@@ -5,7 +5,6 @@ from setuptools import find_packages, setup
 
 
 def get_extra_requires(path, add_all=True):
-    import re
     from collections import defaultdict
 
     with open(path) as fp:
@@ -14,9 +13,9 @@ def get_extra_requires(path, add_all=True):
             if k.strip() and not k.startswith("#"):
                 tags = set()
                 if ":" in k:
-                    k, v = k.split(":")
+                    k, v = k.rsplit(":", 1)
                     tags.update(vv.strip() for vv in v.split(","))
-                tags.add(re.split("[<=>]", k)[0])
+                # tags.add(re.split("[<=>]", k)[0])
                 for t in tags:
                     extra_deps[t].add(k)
 
@@ -61,7 +60,7 @@ def parse_requirements(filename):
 
 
 requirements = parse_requirements("requirements.txt")
-
+print(get_extra_requires("extra-requirements.txt"))
 
 if __name__ == "__main__":
     setup(
