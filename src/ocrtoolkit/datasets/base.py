@@ -23,6 +23,7 @@ class BaseDS:
     items = []
     names = []
     item_keys = {}
+    tfms = []
     size = None
     batched = False
     apply_gs = True
@@ -32,6 +33,7 @@ class BaseDS:
         source=None,
         items=None,
         names=None,
+        tfms=None,
         size=(640, 320),
         apply_gs=True,
         batched=False,
@@ -42,12 +44,6 @@ class BaseDS:
         self.size = size
         self.batched = batched
         self.apply_gs = apply_gs
-        self.tfms = [
-            tfm_to_pil,
-            partial(tfm_to_size, size=size) if size else lambda x: x,
-            tfm_to_gray if apply_gs else lambda x: x,
-            tfm_to_3ch,
-        ]
         self.setup()
 
     def sample(self, k=5, batched=True):
@@ -57,6 +53,7 @@ class BaseDS:
         return self.__class__(
             source=samples,
             names=nl_names,
+            tfms=self.tfms,
             size=self.size,
             apply_gs=self.apply_gs,
             batched=batched,
@@ -80,6 +77,7 @@ class BaseDS:
         return self.__class__(
             source=self.items[start:end],
             names=self.names[start:end],
+            tfms=self.tfms,
             size=self.size,
             apply_gs=self.apply_gs,
             batched=True,
@@ -90,6 +88,9 @@ class BaseDS:
             self._setup_items()
         if self.names is None:
             self._setup_names()
+        if self.tfms is None:
+            self._setup_tfms()
+
         assert len(self.names) == len(self.items)
         assert len(set(self.names)) == len(self.names), "Duplicate names"
         self.item_keys = {name: idx for idx, name in enumerate(self.names)}
@@ -103,6 +104,7 @@ class BaseDS:
             batched=other.batched,
             apply_gs=other.apply_gs,
             size=other.size,
+            tfms=other.tfms,
         )
 
     def __len__(self):
@@ -137,6 +139,7 @@ class BaseDS:
             source=self.source,
             items=items,
             names=names,
+            tfms=self.tfms,
             batched=self.batched,
             apply_gs=self.apply_gs,
             size=self.size,
@@ -147,6 +150,14 @@ class BaseDS:
 
     def _setup_names(self):
         self.names = []
+
+    def _setup_tfms(self):
+        self.tfms = [
+            tfm_to_pil,
+            partial(tfm_to_size, size=self.size) if self.size else lambda x: x,
+            tfm_to_gray if self.apply_gs else lambda x: x,
+            tfm_to_3ch,
+        ]
 
     @staticmethod
     def _serialize_items(items):
