@@ -1,7 +1,9 @@
 import numpy as np
 from loguru import logger
+from tqdm.auto import tqdm
 
 from ocrtoolkit.datasets.base import BaseDS
+from ocrtoolkit.utilities.det_utils import save_dets
 from ocrtoolkit.wrappers.model import DetectionModel
 
 
@@ -34,3 +36,26 @@ def detect(model: DetectionModel, ds: BaseDS, stream=True, **kwargs):
     if stream:
         return gen
     return list(_detect(model, ds, **kwargs))
+
+
+def detect_and_save_h5(
+    model: DetectionModel,
+    ds: BaseDS,
+    path: str,
+    bs=4,
+    start_batch_idx=0,
+    **kwargs,
+):
+    """Detects objects in a dataset
+    Call model.preprocess methods before model.predict methods
+    Images should be converted to np.ndarray before calling preprocess
+    Saves the detections to path.
+    Caution: This captures all detection results in mem before saving.
+    """
+    num_batches = ds.num_batches(bs)
+    l_det_results = []
+    for idx in tqdm(range(start_batch_idx, num_batches)):
+        batch = ds.batch(bs, idx)
+        l_det_results += detect(model, batch, stream=False, **kwargs)
+
+    save_dets(l_det_results, path)
