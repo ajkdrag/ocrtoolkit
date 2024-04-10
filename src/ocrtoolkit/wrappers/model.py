@@ -19,6 +19,10 @@ class BaseModel(metaclass=ABCMeta):
         self.model = model
         self.path = path
         self.device = device
+        self._map_location()
+
+    def _map_location(self):
+        self.model = self.model.to(self.device)
         logger.info(f"Loaded model from {self.path}, to {self.device}")
 
     def preprocess(self, images: List[np.ndarray], **kwargs) -> List[np.ndarray]:

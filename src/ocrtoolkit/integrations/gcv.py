@@ -22,6 +22,9 @@ class GCVModel(DetectionModel):
     def __init__(self, client, path):
         super().__init__(model=client, path=path)
 
+    def _map_location(self):
+        pass
+
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[DetectionResults]:
         l_results = []
         for image in images:

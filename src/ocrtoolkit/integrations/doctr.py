@@ -21,11 +21,12 @@ class DoctrDetModel(DetectionModel):
         from doctr.models.detection.predictor import DetectionPredictor
 
         super().__init__(model, path, device)
-        self.doctr_base_predictor = _OCRPredictor()
         kwargs["mean"] = kwargs.get("mean", model.cfg["mean"])
         kwargs["std"] = kwargs.get("std", model.cfg["std"])
         kwargs["batch_size"] = kwargs.get("batch_size", 2)
         input_shape = model.cfg["input_shape"][1:]
+
+        self.doctr_base_predictor = _OCRPredictor()
         self.predictor = DetectionPredictor(PreProcessor(input_shape, **kwargs), model)
 
     def _predict(self, images: List[np.ndarray], **kwargs) -> List[DetectionResults]:
